@@ -1,5 +1,9 @@
 import { Button } from "@material-tailwind/react";
 import { Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import CEO from "./pages/CEO";
+import Users from "./pages/Users";
+import Main from "./pages/Main";
 
 function App() {
   return (

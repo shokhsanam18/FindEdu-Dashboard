@@ -1,11 +1,18 @@
 import { Button } from "@material-tailwind/react";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <>
-      <h1 className="bg-red-400">hello dashboard</h1>
-      <Button>hello world</Button>
-    </>
+    <div>
+      <Routes>
+      <Route path="/" element={<Layout />}>
+          <Route index element={<Main />} />
+          <Route path="/Users" element={<Users />} />
+          <Route path="/CEO" element={<CEO />} />
+        </Route>
+        <Route path="*" element={<div>404 Not found</div>} />
+      </Routes>
+    </div>
   );
 }
 

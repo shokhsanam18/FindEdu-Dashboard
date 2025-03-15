@@ -1,17 +1,18 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import { SidebarWithBurgerMenu } from "./Sidebar";
+import CustomSidebar, { Sidebar } from "./Sidebar";
+import { ComplexNavbar } from "./Navbar";
 
 const Layout = () => {
   return (
-    <>
-      <div
-        style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-      >
-        <SidebarWithBurgerMenu/>
+    <div style={{ display: "flex" }}>
+      {/* <CustomSidebar/> */}
+      <Sidebar />
+      <div style={{ flex: 1 }}>
+        <ComplexNavbar/>
         <Outlet />
       </div>
-    </>
+    </div>
   );
 };
 

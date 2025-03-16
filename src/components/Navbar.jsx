@@ -26,7 +26,7 @@ import {
   // Bars2Icon,
 } from "@heroicons/react/24/solid";
 import CustomSidebar, { Sidebar } from "./MiniSidebar";
-import { useSidebarStore } from "../Store";
+import { useOpenStore, useSidebarStore } from "../Store";
 
 // profile menu component
 const profileMenuItems = [
@@ -234,8 +234,8 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export function ComplexNavbar() {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
-  const { SideBarShow } = useSidebarStore();
   const { side, openSidebar, closeSidebar } = useSidebarStore();
+  const { open, openOpen, closeOpen } = useOpenStore();
 
   // const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -247,7 +247,7 @@ export function ComplexNavbar() {
   }, []);
 
   return (
-    <Navbar className="mx-auto">
+    <Navbar className={`fixed transition-all rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-9/12' : 'md:w-full'}`}>
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
         <IconButton
           variant="text"
@@ -262,13 +262,19 @@ export function ComplexNavbar() {
           )}
         </IconButton>
 
-        <Typography
-          as="a"
-          href="#"
-          className="mr-4 ml-2 md:block hidden cursor-pointer py-1.5 font-medium"
+        <IconButton
+          variant="text"
+          size="lg"
+          className="md:block hidden"
+          onClick={open ? closeOpen : openOpen}
         >
-          Material Tailwind
-        </Typography>
+          {open ? (
+            <XMarkIcon className="h-8 w-8 stroke-2" />
+          ) : (
+            <Bars3Icon className="h-8 w-8 stroke-2" />
+          )}
+        </IconButton>
+
         {/* <div className="hidden lg:block">
           <NavList />
         </div>

@@ -2,11 +2,12 @@ import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import CustomSidebar, { Sidebar } from "./MiniSidebar";
 import { ComplexNavbar } from "./Navbar";
+import { DefaultSidebar } from "./Sidebar";
 
 const Layout = () => {
   return (
     <div style={{ display: "flex" }}>
-      {/* <CustomSidebar/> */}
+      <DefaultSidebar/>
       <Sidebar />
       <div style={{ flex: 1 }}>
         <ComplexNavbar />

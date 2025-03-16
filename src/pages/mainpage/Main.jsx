@@ -1,13 +1,13 @@
 import React from "react";
 import Header from "./header";
-import Categories from "./categories";
-import Majors from "./Majors";
+import CategoriesMajors from "./Majors";
+import VisitorChart from "./linegraph.jsx";
 const Main = () => {
   return (
     <div className="flex-1">
       <Header />
-      <Categories />
-      <Majors />
+      <CategoriesMajors />
+      <VisitorChart />
     </div>
   );
 };

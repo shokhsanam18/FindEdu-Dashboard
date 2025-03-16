@@ -20,7 +20,7 @@ import { useOpenStore } from "../Store";
   export function DefaultSidebar() {
     const { open} = useOpenStore()
     return (
-      <Card className={`h-screen md:block hidden ${open ? 'md:translate-x-0 ' : 'md:-translate-x-full'} transition-all  p-4 shadow-none  shadow-blue-gray-900/5`}>
+      <Card className={`h-screen transform transition-transform duration-300 ease-in-out hidden  ${open ? 'md:translate-x-0 md:block' : 'md:-translate-x-full md:hidden'} transition-all  p-4 shadow-none  shadow-blue-gray-900/5`}>
         <div className="mb-2 p-4">
           <Typography variant="h5" color="blue-gray">
             Sidebar

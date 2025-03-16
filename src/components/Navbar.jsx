@@ -247,7 +247,7 @@ export function ComplexNavbar() {
   }, []);
 
   return (
-    <Navbar className={`fixed transition-all rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-9/12' : 'md:w-full'}`}>
+    <Navbar className={`ease-in-out transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
         <IconButton
           variant="text"

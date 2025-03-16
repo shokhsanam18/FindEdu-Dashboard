@@ -1,9 +1,19 @@
-import React from 'react'
+import React from "react";
+import { Link, Outlet } from "react-router-dom";
+import CustomSidebar, { Sidebar } from "./Sidebar";
+import { ComplexNavbar } from "./Navbar";
 
 const Layout = () => {
   return (
-    <div>Layout</div>
-  )
-}
+    <div style={{ display: "flex" }}>
+      {/* <CustomSidebar/> */}
+      <Sidebar />
+      <div style={{ flex: 1 }}>
+        <ComplexNavbar/>
+        <Outlet />
+      </div>
+    </div>
+  );
+};
 
 export default Layout

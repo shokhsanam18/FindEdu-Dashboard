@@ -25,9 +25,9 @@ import {
   // RocketLaunchIcon,
   // Bars2Icon,
 } from "@heroicons/react/24/solid";
-import CustomSidebar, { Sidebar} from "./Sidebar";
+import CustomSidebar, { Sidebar } from "./MiniSidebar";
 import { useSidebarStore } from "../Store";
- 
+
 // profile menu component
 const profileMenuItems = [
   {
@@ -51,12 +51,12 @@ const profileMenuItems = [
     icon: PowerIcon,
   },
 ];
- 
+
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
- 
+
   const closeMenu = () => setIsMenuOpen(false);
- 
+
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
       <MenuHandler>
@@ -112,7 +112,7 @@ function ProfileMenu() {
     </Menu>
   );
 }
- 
+
 // // nav list menu
 // const navListMenuItems = [
 //   {
@@ -131,10 +131,10 @@ function ProfileMenu() {
 //       "A complete set of UI Elements for building faster websites in less time.",
 //   },
 // ];
- 
+
 // function NavListMenu() {
 //   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
- 
+
 //   const renderItems = navListMenuItems.map(({ title, description }) => (
 //     <a href="#" key={title}>
 //       <MenuItem>
@@ -147,7 +147,7 @@ function ProfileMenu() {
 //       </MenuItem>
 //     </a>
 //   ));
- 
+
 //   return (
 //     <React.Fragment>
 //       <Menu allowHover open={isMenuOpen} handler={setIsMenuOpen}>
@@ -189,7 +189,7 @@ function ProfileMenu() {
 //     </React.Fragment>
 //   );
 // }
- 
+
 // // nav list component
 // const navListItems = [
 //   {
@@ -205,7 +205,7 @@ function ProfileMenu() {
 //     icon: CodeBracketSquareIcon,
 //   },
 // ];
- 
+
 // function NavList() {
 //   return (
 //     <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
@@ -232,36 +232,36 @@ function ProfileMenu() {
 import { IconButton } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
-
-
-
-
- 
 export function ComplexNavbar() {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const { SideBarShow } = useSidebarStore();
   const { side, openSidebar, closeSidebar } = useSidebarStore();
- 
+
   // const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
- 
+
   React.useEffect(() => {
     window.addEventListener(
       "resize",
-      () => window.innerWidth >= 960 && setIsNavOpen(false),
+      () => window.innerWidth >= 960 && setIsNavOpen(false)
     );
   }, []);
- 
+
   return (
     <Navbar className="mx-auto">
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
-      <IconButton variant="text" size="lg" className="md:hidden block" onClick={side ? closeSidebar : openSidebar}>
-        {side ? (
-          <XMarkIcon className="h-8 w-8 stroke-2" />
-        ) : (
-          <Bars3Icon className="h-8 w-8 stroke-2" />
-        )}
-      </IconButton>
-      
+        <IconButton
+          variant="text"
+          size="lg"
+          className="md:hidden block"
+          onClick={side ? closeSidebar : openSidebar}
+        >
+          {side ? (
+            <XMarkIcon className="h-8 w-8 stroke-2" />
+          ) : (
+            <Bars3Icon className="h-8 w-8 stroke-2" />
+          )}
+        </IconButton>
+
         <Typography
           as="a"
           href="#"

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import CustomSidebar, { Sidebar } from "./Sidebar";
+import CustomSidebar, { Sidebar } from "./MiniSidebar";
 import { ComplexNavbar } from "./Navbar";
 
 const Layout = () => {
@@ -9,11 +9,11 @@ const Layout = () => {
       {/* <CustomSidebar/> */}
       <Sidebar />
       <div style={{ flex: 1 }}>
-        <ComplexNavbar/>
+        <ComplexNavbar />
         <Outlet />
       </div>
     </div>
   );
 };
 
-export default Layout
+export default Layout;

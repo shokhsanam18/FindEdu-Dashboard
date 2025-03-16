@@ -10,7 +10,7 @@ export const useSidebarStore = create((set) => ({
   }));
 
 export const useOpenStore = create((set) => ({
-    open: false,
+    open: true,
     closeOpen: () => set(() => ({ open: false })),
     openOpen: () => set(() => ({ open: true })),
   }));

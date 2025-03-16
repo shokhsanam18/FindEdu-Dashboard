@@ -293,9 +293,9 @@ export function ComplexNavbar() {
         </Button> */}
         <ProfileMenu />
       </div>
-      <MobileNav open={isNavOpen} className="overflow-scroll">
-        {/* <NavList /> */}
-      </MobileNav>
+      {/* <MobileNav open={isNavOpen} className="overflow-scroll">
+        <NavList />
+      </MobileNav> */}
     </Navbar>
   );
 }

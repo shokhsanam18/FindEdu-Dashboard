@@ -5,7 +5,7 @@ import Majors from "./Majors";
 const Main = () => {
   return (
     <div className="flex-1">
-      <Header />
+      {/* <Header /> */}
       <Categories />
       <Majors />
     </div>

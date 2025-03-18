@@ -1,4 +1,4 @@
-import Table from "../Components-user/Table";
+import Table from "../components/Table-users";
 
 function UserPage() {
   return (

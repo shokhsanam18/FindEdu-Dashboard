@@ -9,7 +9,7 @@ function Table() {
     axios
       .get("http://18.141.233.37:4000/api/users", {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQyMTMwNDIwLCJleHAiOjE3NDIxMzQwMjB9.C3DfAThwgKstBNzmwg8jG0O8KtYbxe09X2MDhAu_kr4`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQyMzA2MDYxLCJleHAiOjE3NDIzMDk2NjF9.S1Bgnq-T4zgTcUWKt5AU8H18W0ce0R5G-unmJEfRvfI`,
         },
       })
       .then((response) => {
@@ -38,7 +38,9 @@ function Table() {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="8" className="p-4 text-center">Loading...</td>
+              <td colSpan="8" className="p-4 text-center">
+                Loading...
+              </td>
             </tr>
           ) : users.length > 0 ? (
             users.map((user) => (
@@ -49,7 +51,7 @@ function Table() {
                 <td className="border p-2">{user.email}</td>
                 <td className="border p-2">{user.phone}</td>
                 <td className="border p-2">{user.role || "N/A"}</td>
-                <td className="border p-2">{user.password || "******" }</td>
+                <td className="border p-2">{user.password || "******"}</td>
                 <td className="border p-2">
                   <img
                     src={user.image || "https://via.placeholder.com/40"}
@@ -61,7 +63,9 @@ function Table() {
             ))
           ) : (
             <tr>
-              <td colSpan="8" className="p-4 text-center">No users found.</td>
+              <td colSpan="8" className="p-4 text-center">
+                No users found.
+              </td>
             </tr>
           )}
         </tbody>

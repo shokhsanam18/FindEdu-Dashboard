@@ -1,9 +1,12 @@
-import React from 'react'
+import Table from "../components/Table-users";
 
-const Users = () => {
+function UserPage() {
   return (
-    <div>Users</div>
-  )
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Users</h2>
+      <Table />
+    </div>
+  );
 }
 
-export default Users
+export default UserPage;

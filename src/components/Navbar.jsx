@@ -34,10 +34,10 @@ const profileMenuItems = [
     label: "My Profile",
     icon: UserCircleIcon,
   },
-  {
-    label: "Edit Profile",
-    icon: Cog6ToothIcon,
-  },
+  // {
+  //   label: "Edit Profile",
+  //   icon: Cog6ToothIcon,
+  // },
   // {
   //   label: "Inbox",
   //   icon: InboxArrowDownIcon,
@@ -63,18 +63,18 @@ function ProfileMenu() {
         <Button
           variant="text"
           color="blue-gray"
-          className="flex items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
+          className="flex items-center hover:bg-[#efd8ff] focus:bg-[#efd8ff] active:bg-[#efd8ff] gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
         >
           <Avatar
             variant="circular"
             size="sm"
             alt="tania andrew"
-            className="border border-gray-900 p-0.5"
+            className="border border-purple-900  p-0.5"
             src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
           />
           <ChevronDownIcon
             strokeWidth={2.5}
-            className={`h-3 w-3 transition-transform ${
+            className={`h-3 w-3 text-[#290a3f] transition-transform ${
               isMenuOpen ? "rotate-180" : ""
             }`}
           />
@@ -87,21 +87,20 @@ function ProfileMenu() {
             <MenuItem
               key={label}
               onClick={closeMenu}
-              className={`flex items-center gap-2 rounded ${
+              className={`flex items-center  gap-2 rounded ${
                 isLastItem
                   ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                  : ""
+                  : "hover:bg-[#efd8ff] focus:bg-[#efd8ff] active:bg-[#efd8ff]"
               }`}
             >
               {React.createElement(icon, {
-                className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                className: `h-4 w-4 ${isLastItem ? "text-red-500" : "text-[#290a3f]"}`,
                 strokeWidth: 2,
               })}
               <Typography
                 as="span"
                 variant="small"
-                className="font-normal"
-                color={isLastItem ? "red" : "inherit"}
+                className={`font-normal ${isLastItem ? "text-red-500" : "text-[#290a3f]"}`}
               >
                 {label}
               </Typography>
@@ -247,12 +246,12 @@ export function ComplexNavbar() {
   }, []);
 
   return (
-    <Navbar className={`ease-in-out transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
-      <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
+    <Navbar className={`ease-in-out sticky z-50 bg-opacity-100 transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
+      <div className="relative mx-auto flex  items-center justify-between text-blue-gray-900">
         <IconButton
           variant="text"
           size="lg"
-          className="md:hidden block"
+          className="md:hidden text-[#290a3f] active:bg-[#efd8ff] hover:bg-[#efd8ff] block"
           onClick={side ? closeSidebar : openSidebar}
         >
           {side ? (
@@ -265,7 +264,7 @@ export function ComplexNavbar() {
         <IconButton
           variant="text"
           size="lg"
-          className="md:block hidden"
+          className="md:block hover:bg-[#efd8ff] active:bg-[#efd8ff] text-[#290a3f] hidden"
           onClick={open ? closeOpen : openOpen}
         >
           {open ? (

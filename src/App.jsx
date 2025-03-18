@@ -10,9 +10,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/Users" element={<Users />} />
-        <Route path="/CEO" element={<CEO />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Main />} />
+          <Route path="/Users" element={<Users />} />
+          <Route path="/CEO" element={<CEO />} />
+        </Route>
         <Route path="*" element={<div>404 Not found</div>} />
       </Routes>
     </QueryClientProvider>

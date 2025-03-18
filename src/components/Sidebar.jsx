@@ -14,6 +14,8 @@ import {
     Cog6ToothIcon,
     InboxIcon,
     PowerIcon,
+    UsersIcon,
+    AcademicCapIcon,
   } from "@heroicons/react/24/solid";
 import { useOpenStore } from "../Store";
 import { Link } from "react-router-dom";
@@ -39,26 +41,19 @@ import { Link } from "react-router-dom";
         <Link to ='/Users' className="hover:bg-[#efd8ff] rounded-lg">
         <ListItem className="hover:bg-[#efd8ff] active:bg-[#efd8ff]">
             <ListItemPrefix>
-              <ShoppingBagIcon className="h-5 w-5" />
+              <UsersIcon className="h-5 w-5" />
             </ListItemPrefix>
-            E-Commerce
+            Users
           </ListItem>
         </Link>
-          <ListItem>
+        <Link to ='/CEO' className="hover:bg-[#efd8ff] rounded-lg">
+          <ListItem className="hover:bg-[#efd8ff] active:bg-[#efd8ff]">
             <ListItemPrefix>
-              <InboxIcon className="h-5 w-5" />
+              <AcademicCapIcon className="h-5 w-5" />
             </ListItemPrefix>
-            Inbox
-            <ListItemSuffix>
-              <Chip value="14" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-            </ListItemSuffix>
+            CEO
           </ListItem>
-          <ListItem>
-            <ListItemPrefix>
-              <UserCircleIcon className="h-5 w-5" />
-            </ListItemPrefix>
-            Profile
-          </ListItem>
+        </Link>
           <ListItem>
             <ListItemPrefix>
               <Cog6ToothIcon className="h-5 w-5" />

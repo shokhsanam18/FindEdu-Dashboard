@@ -25,7 +25,7 @@ import {
   // RocketLaunchIcon,
   // Bars2Icon,
 } from "@heroicons/react/24/solid";
-import CustomSidebar, { Sidebar } from "./MiniSidebar";
+import Sidebar  from "./MiniSidebar";
 import { useOpenStore, useSidebarStore } from "../Store";
 
 // profile menu component

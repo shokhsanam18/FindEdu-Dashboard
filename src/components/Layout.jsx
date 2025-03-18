@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import CustomSidebar, { Sidebar } from "./MiniSidebar";
+import Sidebar  from "./MiniSidebar";
 import { ComplexNavbar } from "./Navbar";
 import { DefaultSidebar } from "./Sidebar";
 

@@ -33,22 +33,24 @@ const profileMenuItems = [
   {
     label: "My Profile",
     icon: UserCircleIcon,
+    link: '/MyProfile'
   },
   // {
-  //   label: "Edit Profile",
-  //   icon: Cog6ToothIcon,
-  // },
-  // {
-  //   label: "Inbox",
-  //   icon: InboxArrowDownIcon,
-  // },
-  // {
+    //   label: "Edit Profile",
+    //   icon: Cog6ToothIcon,
+    // },
+    // {
+      //   label: "Inbox",
+      //   icon: InboxArrowDownIcon,
+      // },
+      // {
   //   label: "Help",
   //   icon: LifebuoyIcon,
   // },
   {
     label: "Sign Out",
     icon: PowerIcon,
+    // link: '/MyProfile'
   },
 ];
 
@@ -81,30 +83,34 @@ function ProfileMenu() {
         </Button>
       </MenuHandler>
       <MenuList className="p-1">
-        {profileMenuItems.map(({ label, icon }, key) => {
+        {profileMenuItems.map(({ label, icon, link }, key) => {
           const isLastItem = key === profileMenuItems.length - 1;
           return (
+            <Link to={`${isLastItem
+                ? "#"
+                : link}`}>
             <MenuItem
-              key={label}
-              onClick={closeMenu}
-              className={`flex items-center  gap-2 rounded ${
-                isLastItem
-                  ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                  : "hover:bg-[#efd8ff] focus:bg-[#efd8ff] active:bg-[#efd8ff]"
-              }`}
-            >
-              {React.createElement(icon, {
-                className: `h-4 w-4 ${isLastItem ? "text-red-500" : "text-[#290a3f]"}`,
-                strokeWidth: 2,
-              })}
-              <Typography
-                as="span"
-                variant="small"
-                className={`font-normal ${isLastItem ? "text-red-500" : "text-[#290a3f]"}`}
-              >
-                {label}
-              </Typography>
-            </MenuItem>
+            key={label}
+            onClick={closeMenu}
+            className={`flex items-center  gap-2 rounded ${
+              isLastItem
+                    ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                    : "hover:bg-[#efd8ff] focus:bg-[#efd8ff] active:bg-[#efd8ff]"
+                }`}
+                >
+                {React.createElement(icon, {
+                  className: `h-4 w-4 ${isLastItem ? "text-red-500" : "text-[#290a3f]"}`,
+                  strokeWidth: 2,
+                })}
+                <Typography
+                  as="span"
+                  variant="small"
+                  className={`font-normal ${isLastItem ? "text-red-500" : "text-[#290a3f]"}`}
+                >
+                  {label}
+                </Typography>
+              </MenuItem>
+                </Link>
           );
         })}
       </MenuList>
@@ -230,6 +236,7 @@ function ProfileMenu() {
 
 import { IconButton } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 export function ComplexNavbar() {
   const [isNavOpen, setIsNavOpen] = React.useState(false);

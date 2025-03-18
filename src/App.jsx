@@ -5,6 +5,7 @@ import Users from "./pages/Users";
 import Main from "./pages/mainpage/Main";
 import Layout from "./components/Layout";
 import Settings from "./pages/Settings";
+import MyProfile from "./pages/MyProfile";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/Users" element={<Users />} />
           <Route path="/CEO" element={<CEO />} />
           <Route path="/Settings" element={<Settings />} />
+          <Route path="/MyProfile" element={<MyProfile />} />
         </Route>
         <Route path="*" element={<div>404 Not found</div>} />
       </Routes>

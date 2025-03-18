@@ -1,13 +1,15 @@
-import { Button } from "@material-tailwind/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Routes } from "react-router-dom";
-import Layout from "./components/Layout";
 import CEO from "./pages/CEO";
 import Users from "./pages/Users";
 import Main from "./pages/mainpage/Main";
+import Layout from "./components/Layout";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div>
+    <QueryClientProvider client={queryClient}>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Main />} />
@@ -16,7 +18,7 @@ function App() {
         </Route>
         <Route path="*" element={<div>404 Not found</div>} />
       </Routes>
-    </div>
+    </QueryClientProvider>
   );
 }
 

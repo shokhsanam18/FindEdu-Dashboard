@@ -50,7 +50,7 @@ const CategoriesMajors = () => {
     if (error) return <p className="text-red-500">Ошибка: {error.message}</p>;
 
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 lg:gap-8">
+      <div className="w-full grid grid-cols-2  md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5 lg:gap-6">
         {data.map((item, index) => (
           <Card
             key={index}

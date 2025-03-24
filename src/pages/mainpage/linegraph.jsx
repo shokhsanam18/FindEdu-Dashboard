@@ -30,10 +30,11 @@ const pieData = [
   { name: "Owners", value: 145, color: "#007BFF" },
   { name: "Admins", value: 6, color: "#00CCCC" },
 ];
+
 export default function VisitorChart() {
   return (
-    <div className="flex flex-col md:flex-row gap-4 m-5">
-      <Card className="w-full md:w-1/2 p-6 shadow-xl">
+    <div className="flex flex-col md:flex-row md:flex-wrap gap-4 m-5">
+      <Card className="w-full md:w-[48%] p-6 shadow-xl">
         <CardBody>
           <Typography variant="h5" className="mb-2 font-semibold text-gray-700">
             Visitor Statistics
@@ -76,12 +77,12 @@ export default function VisitorChart() {
       </Card>
 
       {/* Pie Chart */}
-      <Card className="w-full md:w-1/2">
+      <Card className="w-full md:w-[48%]">
         <CardBody className="grid place-items-center px-4">
           <Typography variant="h6" className="mb-4 font-semibold text-gray-700">
             User Distribution
           </Typography>
-          <ResponsiveContainer width={300} height={300}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={pieData}

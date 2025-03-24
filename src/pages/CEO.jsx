@@ -62,7 +62,7 @@ export default function CEO() {
 
       <div className="flex gap-4 my-4">
         <Input
-          label="Добавить центр"
+          label="Markaz qo'shish"
           value={newCenter}
           onChange={(e) => setNewCenter(e.target.value)}
         />
@@ -80,7 +80,7 @@ export default function CEO() {
       </div>
 
       <Input
-        label="Поиск по центрам"
+        label="Markaz topish"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="mb-4"

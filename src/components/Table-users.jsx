@@ -1,24 +1,60 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
 function Table() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQyODIzMDMwLCJleHAiOjE3NDI4MjY2MzB9.Wskq9ShVSGjWXc33oWjVVpDEjid-wVWF3Db9XgtxvKo"
+  );
+
+  const tokenRef = useRef(token);
 
   useEffect(() => {
-    axios
-      .get("http://18.141.233.37:4000/api/users", {
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQyMzA2MDYxLCJleHAiOjE3NDIzMDk2NjF9.S1Bgnq-T4zgTcUWKt5AU8H18W0ce0R5G-unmJEfRvfI`,
-        },
-      })
-      .then((response) => {
-        console.log("API Response:", response.data);
-        setUsers(response.data.data || []);
-      })
-      .catch((error) => console.error("Ошибка при запросе:", error))
-      .finally(() => setLoading(false));
-  }, []);
+    tokenRef.current = token;
+  }, [token]);
+
+  const refreshAuthToken = async () => {
+    try {
+      const response = await axios.post(
+        "http://18.141.233.37:4000/api/refresh-token",
+        { refreshToken: tokenRef.current } 
+      );
+
+      const newToken = response.data.accessToken;
+      setToken(newToken);
+      tokenRef.current = newToken; 
+      console.log("Token обновлен:", newToken);
+
+      fetchUsers(newToken);
+    } catch (error) {
+      console.error("Ошибка обновления токена:", error.response?.data || error);
+    }
+  };
+
+  const fetchUsers = async (authToken = tokenRef.current) => {
+    setLoading(true);
+    try {
+      const response = await axios.get("http://18.141.233.37:4000/api/users", {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      console.log("API Response:", response.data);
+      setUsers(response.data.data || []);
+    } catch (error) {
+      console.error("Ошибка при запросе:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+
+    const tokenInterval = setInterval(refreshAuthToken, 15 * 60 * 1000);
+
+    return () => clearInterval(tokenInterval);
+  }, []); 
 
   return (
     <div className="overflow-x-auto p-4">
@@ -51,7 +87,7 @@ function Table() {
                 <td className="border p-2">{user.email}</td>
                 <td className="border p-2">{user.phone}</td>
                 <td className="border p-2">{user.role || "N/A"}</td>
-                <td className="border p-2">{user.password || "******"}</td>
+                <td className="border p-2">******</td>
                 <td className="border p-2">
                   <img
                     src={user.image || "https://via.placeholder.com/40"}

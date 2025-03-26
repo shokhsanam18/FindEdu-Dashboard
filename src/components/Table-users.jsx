@@ -18,12 +18,12 @@ function Table() {
     try {
       const response = await axios.post(
         "http://18.141.233.37:4000/api/refresh-token",
-        { refreshToken: tokenRef.current } 
+        { refreshToken: tokenRef.current }
       );
 
       const newToken = response.data.accessToken;
       setToken(newToken);
-      tokenRef.current = newToken; 
+      tokenRef.current = newToken;
       console.log("Token обновлен:", newToken);
 
       fetchUsers(newToken);
@@ -54,7 +54,7 @@ function Table() {
     const tokenInterval = setInterval(refreshAuthToken, 15 * 60 * 1000);
 
     return () => clearInterval(tokenInterval);
-  }, []); 
+  }, []);
 
   return (
     <div className="overflow-x-auto p-4">

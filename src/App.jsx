@@ -6,23 +6,26 @@ import Main from "./pages/mainpage/Main";
 import Layout from "./components/Layout";
 import Settings from "./pages/Settings";
 import MyProfile from "./pages/MyProfile";
+import { ThemeProvider } from "./components/context/theme";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Main />} />
-          <Route path="/Users" element={<Users />} />
-          <Route path="/CEO" element={<CEO />} />
-          <Route path="/Settings" element={<Settings />} />
-          <Route path="/MyProfile" element={<MyProfile />} />
-        </Route>
-        <Route path="*" element={<div>404 Not found</div>} />
-      </Routes>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Main />} />
+            <Route path="/Users" element={<Users />} />
+            <Route path="/CEO" element={<CEO />} />
+            <Route path="/Settings" element={<Settings />} />
+            <Route path="/MyProfile" element={<MyProfile />} />
+          </Route>
+          <Route path="*" element={<div>404 Not found</div>} />
+        </Routes>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

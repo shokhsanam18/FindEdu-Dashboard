@@ -88,9 +88,9 @@ function ProfileMenu() {
           return (
             <Link to={`${isLastItem
                 ? "#"
-                : link}`}>
+                : link}`}
+                key={label}>
             <MenuItem
-            key={label}
             onClick={closeMenu}
             className={`flex items-center  gap-2 rounded ${
               isLastItem

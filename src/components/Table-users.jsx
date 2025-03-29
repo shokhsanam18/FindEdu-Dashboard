@@ -5,15 +5,18 @@ function Table() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0MzA2OTYzNCwiZXhwIjoxNzQzMDczMjM0fQ.4tHLQH7ELZiheqwVAwmv40TZ1WlrAREZdrXJQNWNB1s"
+    () => localStorage.getItem("authToken") || ""
   );
   const [page, setPage] = useState(1);
-  const usersPerPage = 5;
+  const usersPerPage = 150;
 
   const tokenRef = useRef(token);
 
   useEffect(() => {
     tokenRef.current = token;
+    if (token) {
+      localStorage.setItem("authToken", token);
+    }
   }, [token]);
 
   const refreshAuthToken = async () => {
@@ -25,6 +28,7 @@ function Table() {
       const newToken = response.data.accessToken;
       setToken(newToken);
       tokenRef.current = newToken;
+      localStorage.setItem("authToken", newToken);
       console.log("Token обновлен:", newToken);
       fetchUsers(newToken);
     } catch (error) {
@@ -33,6 +37,7 @@ function Table() {
   };
 
   const fetchUsers = async (authToken = tokenRef.current) => {
+    if (!authToken) return;
     setLoading(true);
     try {
       const response = await axios.get("http://18.141.233.37:4000/api/users", {
@@ -54,10 +59,10 @@ function Table() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    if (token) fetchUsers();
     const tokenInterval = setInterval(refreshAuthToken, 15 * 60 * 1000);
     return () => clearInterval(tokenInterval);
-  }, []);
+  }, [token, page]);
 
   const handleEdit = async (id) => {
     const newEmail = prompt("Введите новый email:");

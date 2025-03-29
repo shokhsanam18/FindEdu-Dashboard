@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import axios from "axios";
+
 
 
 
@@ -58,23 +60,26 @@ export const useAuthStore = create((set, get) => ({
     login: async (values) => {
       try {
         const res = await axios.post(`${API_BASE}/users/login`, values);
+        // console.log("🟢 Raw login response:", res); // 👈 Add this line
+    
         const { accessToken, refreshToken } = res.data;
-  
+    
         if (accessToken && refreshToken) {
           localStorage.setItem("accessToken", accessToken);
           localStorage.setItem("refreshToken", refreshToken);
           set({ accessToken, refreshToken });
-  
+    
           const user = await get().fetchUserData();
-          toast.success("Login successful!");
           return { success: true, role: user?.role };
         }
-  
-        toast.error("Invalid credentials");
-        return { success: false };
+    
+        return { success: false, message: "Tokens missing in response" };
       } catch (error) {
-        toast.error(error.response?.data?.message || "Login failed");
-        return { success: false, message: error.response?.data?.message };
+        console.error("🔴 Login error response:", error.response?.data || error.message); // 👈 Add this line too
+        return {
+          success: false,
+          message: error.response?.data?.message || "Login failed",
+        };
       }
     },
   

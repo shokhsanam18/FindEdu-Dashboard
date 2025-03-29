@@ -30,7 +30,7 @@ const refreshAccessToken = async (navigate) => {
     const storedRefreshToken = localStorage.getItem("refreshToken");
     if (!storedRefreshToken) throw new Error("No refresh token available");
 
-    const response = await axios.post(`${API_BASE}/refresh`, { refreshToken: storedRefreshToken });
+    const response = await axios.post(`${API_BASE}/users/refresh`, { refreshToken: storedRefreshToken });
     
     localStorage.setItem("accessToken", response.data.accessToken);
     return response.data.accessToken;
@@ -38,7 +38,7 @@ const refreshAccessToken = async (navigate) => {
     console.error("Refresh token failed:", error);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    navigate("/");
+    navigate("/Login");
     throw error;
   }
 };
@@ -90,9 +90,11 @@ const Login = () => {
 
   const loginUser = async (values) => {
     const login = useAuthStore.getState().login;
+    // console.log("🟡 Login form values:", values);
   
     try {
       const result = await login(values);
+      // console.log("🟢 Response from /login:", result);
   
       if (result.success) {
         const role = result.role ? result.role.toUpperCase() : "USER";
@@ -101,13 +103,7 @@ const Login = () => {
         console.log(" Debug: Processed role after cleanup:", role);
   
 setTimeout(() => {
-if (role === "USER") {
-toast.success("Login successful! Redirecting...");
- navigate("/"); 
-} else if (role === "CEO") {
-toast.success("Login successful! Redirecting...");
-            navigate("/ceo"); 
-} else if (role === "ADMIN") {
+if (role === "ADMIN") {
   toast.success("Login successful! Redirecting...");
               navigate("/"); 
   } else {

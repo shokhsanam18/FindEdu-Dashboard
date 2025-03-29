@@ -8,6 +8,7 @@ import Settings from "./pages/Settings";
 import MyProfile from "./pages/MyProfile";
 import Login from "./pages/Login/Login";
 import { ThemeProvider } from "./components/context/theme";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -16,15 +17,33 @@ function App() {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route path="/Login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Main />} />
-            <Route path="/Users" element={<Users />} />
-            <Route path="/CEO" element={<CEO />} />
-            <Route path="/Settings" element={<Settings />} />
-            <Route path="/MyProfile" element={<MyProfile />} />
+            <Route
+              path="Users"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <Users />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="CEO"
+              element={<ProtectedRoute requiredRole="ADMIN"><CEO /></ProtectedRoute>
+              }
+            />
+            <Route path="Settings" element={<Settings />} />
+            <Route path="MyProfile" element={<MyProfile />} />
           </Route>
-          <Route path="/Login" element={<Login/>} />
-          <Route path="*" element={<div>404 Not found</div>} />
+          <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </QueryClientProvider>
     </ThemeProvider>

@@ -12,6 +12,7 @@ import {
   // Card,
   // IconButton,
 } from "@material-tailwind/react";
+import { useAuthStore } from "../Store";
 import {
   // CubeTransparentIcon,
   UserCircleIcon,
@@ -59,6 +60,15 @@ function ProfileMenu() {
 
   const closeMenu = () => setIsMenuOpen(false);
 
+
+  const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout(); // Clear tokens + user state
+    navigate("/Login"); // Redirect to login
+  };
+
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
       <MenuHandler>
@@ -91,7 +101,7 @@ function ProfileMenu() {
                 : link}`}
                 key={label}>
             <MenuItem
-            onClick={closeMenu}
+            onClick={isLastItem ? handleLogout : closeMenu}
             className={`flex items-center  gap-2 rounded ${
               isLastItem
                     ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -236,7 +246,7 @@ function ProfileMenu() {
 
 import { IconButton } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function ComplexNavbar() {
   const [isNavOpen, setIsNavOpen] = React.useState(false);

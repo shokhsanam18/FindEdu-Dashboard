@@ -5,59 +5,72 @@ function Table() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0MzA2OTYzNCwiZXhwIjoxNzQzMDczMjM0fQ.4tHLQH7ELZiheqwVAwmv40TZ1WlrAREZdrXJQNWNB1s"
+    () => localStorage.getItem("authToken") || ""
   );
   const [page, setPage] = useState(1);
-  const usersPerPage = 5;
+  const usersPerPage = 150;
 
   const tokenRef = useRef(token);
 
   useEffect(() => {
     tokenRef.current = token;
+    if (token) {
+      localStorage.setItem("authToken", token);
+    }
   }, [token]);
 
   const refreshAuthToken = async () => {
     try {
+      console.log("🔄 Обновление токена...");
       const response = await axios.post(
         "http://18.141.233.37:4000/api/users/refreshToken",
         { refreshToken: tokenRef.current }
       );
       const newToken = response.data.accessToken;
+      console.log("✅ Новый токен получен:", newToken);
       setToken(newToken);
       tokenRef.current = newToken;
-      console.log("Token обновлен:", newToken);
+      localStorage.setItem("authToken", newToken);
       fetchUsers(newToken);
     } catch (error) {
-      console.error("Ошибка обновления токена:", error.response?.data || error);
+      console.error(
+        "❌ Ошибка обновления токена:",
+        error.response?.data || error
+      );
+      localStorage.removeItem("authToken");
+      setToken("");
     }
   };
 
   const fetchUsers = async (authToken = tokenRef.current) => {
+    if (!authToken) {
+      console.log("❌ Токен отсутствует. Запрашиваем новый...");
+      return refreshAuthToken();
+    }
     setLoading(true);
     try {
       const response = await axios.get("http://18.141.233.37:4000/api/users", {
         headers: { Authorization: `Bearer ${authToken}` },
-        params: {
-          take: usersPerPage,
-          page: page,
-          sortBy: "id",
-          sortOrder: "ASC",
-        },
+        params: { take: usersPerPage, page, sortBy: "id", sortOrder: "ASC" },
       });
-      console.log("API Response:", response.data);
+      console.log("✅ Данные пользователей получены:", response.data);
       setUsers(response.data.data || []);
     } catch (error) {
-      console.error("Ошибка при запросе:", error);
+      console.error("❌ Ошибка при запросе пользователей:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    if (token) {
+      fetchUsers();
+    } else {
+      refreshAuthToken();
+    }
     const tokenInterval = setInterval(refreshAuthToken, 15 * 60 * 1000);
     return () => clearInterval(tokenInterval);
-  }, []);
+  }, [token, page]);
 
   const handleEdit = async (id) => {
     const newEmail = prompt("Введите новый email:");

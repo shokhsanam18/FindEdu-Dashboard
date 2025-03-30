@@ -9,10 +9,24 @@ import MyProfile from "./pages/MyProfile";
 import Login from "./pages/Login/Login";
 import { ThemeProvider } from "./components/context/theme";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuthStore } from "./Store";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
 function App() {
+
+  const fetchUserData = useAuthStore((state) => state.fetchUserData);
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  useEffect(() => {
+    // Try to fetch user data if token exists
+    if (accessToken) {
+      fetchUserData();
+    }
+  }, [accessToken, fetchUserData]);
+
+
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>

@@ -1,109 +1,33 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { useCenterStore } from "../../Store";
 
 const CentersManagement = () => {
-  const [centers, setCenters] = useState([]);
   const [newCenter, setNewCenter] = useState({ name: "", location: "" });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  const [token, setToken] = useState(localStorage.getItem("authToken") || "");
-  const tokenRef = useRef(token);
-
-  useEffect(() => {
-    tokenRef.current = token;
-  }, [token]);
-
-  const refreshAuthToken = async () => {
-    try {
-      const response = await axios.post(
-        "http://18.141.233.37:4000/api/refresh-token",
-        { refreshToken: tokenRef.current }
-      );
-
-      const newToken = response.data.accessToken;
-      setToken(newToken);
-      tokenRef.current = newToken;
-      localStorage.setItem("authToken", newToken); 
-      console.log("Token updated:", newToken);
-
-      fetchCenters(newToken);
-    } catch (error) {
-      console.error("Error refreshing token:", error.response?.data || error);
-      setError("Failed to refresh token. Please log in again.");
-    }
-  };
-
-  const fetchCenters = async (authToken = tokenRef.current) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        "http://18.141.233.37:4000/api/centers",
-        {
-          headers: { Authorization: `Bearer ${authToken}` }, 
-        }
-      );
-
-      console.log("API Response:", response.data);
-      setCenters(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching centers:", error);
-      if (error.response?.status === 401) {
-        console.log("Token expired, refreshing...");
-        await refreshAuthToken();
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddCenter = async () => {
-    if (token) {
-      try {
-        const response = await axios.post(
-          "http://18.141.233.37:4000/api/centers",
-          newCenter,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setCenters([...centers, response.data]);
-        setNewCenter({ name: "", location: "" });
-      } catch (error) {
-        console.error("Error adding center:", error);
-        setError("Failed to add center.");
-      }
-    } else {
-      setError("Authentication token is missing.");
-    }
-  };
-
-  const handleDeleteCenter = async (centerId) => {
-    if (token) {
-      try {
-        await axios.delete(
-          `http://18.141.233.37:4000/api/centers/${centerId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setCenters(centers.filter((center) => center.id !== centerId));
-      } catch (error) {
-        console.error("Error deleting center:", error);
-        setError("Failed to delete center.");
-      }
-    } else {
-      setError("Authentication token is missing.");
-    }
-  };
+  const {
+    centers,
+    fetchCenters,
+    addCenter,
+    deleteCenter,
+    loading,
+    error,
+  } = useCenterStore()
 
   useEffect(() => {
     fetchCenters();
+    const interval = setInterval(() => {
+      useCenterStore.getState().fetchCenters();
+    }, 15 * 60 * 1000); // 15 min
 
-    const tokenInterval = setInterval(refreshAuthToken, 15 * 60 * 1000);
-
-    return () => clearInterval(tokenInterval);
+    return () => clearInterval(interval);
   }, []);
+
+  const handleAddCenter = async () => {
+    if (!newCenter.name || !newCenter.location) return;
+    await addCenter(newCenter);
+    setNewCenter({ name: "", location: "" });
+  };
 
   return (
     <div className="centers-management">

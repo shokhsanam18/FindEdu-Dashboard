@@ -315,7 +315,7 @@ export function ComplexNavbar() {
   };
 
   return (
-    <Navbar className={`ease-in-out max-w-full dark:bg-gray-900 dark:text-white sticky z-50 bg-opacity-100 transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
+    <Navbar className={`ease-in-out max-w-full dark:bg-gray-900 dark:text-white sticky z-50 bg-opacity-100 transition-all border-none duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
       <div className="relative mx-auto flex  items-center justify-between text-blue-gray-900">
         <IconButton
           variant="text"

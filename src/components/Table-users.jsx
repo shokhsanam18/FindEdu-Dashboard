@@ -57,7 +57,7 @@ function Table() {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse border border-gray-300">
+      <table className="w-full border-collapse text-xs border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
             <th className="border p-2">ID</th>

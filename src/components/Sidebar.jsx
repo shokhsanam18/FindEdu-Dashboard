@@ -23,7 +23,7 @@ import { Link } from "react-router-dom";
   export function DefaultSidebar() {
     const { open} = useOpenStore()
     return (
-      <Card className={`h-screen  dark:bg-gray-900 dark:text-white z-50 sticky top-0 left-0 transform transition-transform duration-300 ease-in-out hidden  ${open ? 'md:translate-x-0 md:block' : 'md:-translate-x-full md:hidden'} transition-all  p-4 shadow-none  shadow-blue-gray-900/5`}>
+      <Card className={`h-screen  dark:bg-gray-900 dark:text-white z-40 sticky top-0 left-0 transform transition-transform duration-300 ease-in-out hidden  ${open ? 'md:translate-x-0 md:block' : 'md:-translate-x-full md:hidden'} transition-all  p-4 shadow-none  shadow-blue-gray-900/5`}>
         <Link to='/'>
           <div className="mb-2 p-4 w-56">
               <img src="./img/logo.png" alt="" />

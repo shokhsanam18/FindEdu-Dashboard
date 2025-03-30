@@ -343,31 +343,20 @@ export function ComplexNavbar() {
           )}
         </IconButton>
 
-        <div className="w-full flex flex-col items-center relative">
-      <form
-        className="flex items-center justify-center w-full"
-        onSubmit={(e) => e.preventDefault()}
-      >
-        <input
-          type="search"
-          className="outline-none border-2 border-violet-800 rounded-tl-2xl rounded-bl-2xl py-1 text-2xl w-auto px-3"
-          placeholder="Search..."
-          value={query}
-          onChange={handleSearch}
-        />
-        <button
-          type="submit"
-          className="border-2 border-violet-800 rounded-tr-2xl rounded-br-2xl p-2"
-        >
+        <div className="w-full flex flex-col items-center relative p-1">
+      <form className="relative flex items-center w-full max-w-lg bg-white shadow-md rounded-full border border-violet-600 p-1 overflow-hidden" onSubmit={(e) => e.preventDefault()}>
+        <input type="search" className="flex-grow outline-none text-base px-4 py-2 rounded-full w-full" placeholder="Search..." value={query}
+        onChange={handleSearch}/>
+        <button type="submit" className="bg-violet-600 hover:bg-violet-500 text-white rounded-full p-2 flex items-center justify-center shadow-sm transition-transform transform hover:scale-105">
         <Search />
         </button>
       </form>
 
       
       {suggestions.length > 0 && (
-        <div className="absolute top-full left-[30%] w-full max-w-md bg-white shadow-lg rounded-md border border-gray-300 mt-2 z-50 max-h-60 overflow-y-auto">
+        <div className="absolute top-full mt-2 w-full max-w-lg bg-white shadow-lg rounded-md border border-gray-300 overflow-hidden max-h-48 overflow-y-auto animate-fade-in">
           {suggestions.map((item, index) => (
-            <div key={index} className="p-2 hover:bg-gray-200 cursor-pointer"
+            <div key={index} className="p-2 hover:bg-violet-100 cursor-pointer transition-all text-smcursor-pointer"
         onClick={() => handleSelect(item)}>{item.name}</div>
           ))}
         </div>

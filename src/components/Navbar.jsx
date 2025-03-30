@@ -27,6 +27,7 @@ import {
 } from "@heroicons/react/24/solid";
 import Sidebar  from "./MiniSidebar";
 import { useOpenStore, useSidebarStore } from "../Store";
+import { Search } from "lucide-react"
 
 // profile menu component
 const profileMenuItems = [
@@ -237,11 +238,17 @@ function ProfileMenu() {
 import { IconButton } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function ComplexNavbar() {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const { side, openSidebar, closeSidebar } = useSidebarStore();
   const { open, openOpen, closeOpen } = useOpenStore();
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+  const [suggestions, setSuggestions] = useState([]); 
 
   // const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -252,8 +259,54 @@ export function ComplexNavbar() {
     );
   }, []);
 
+    const suggestionsList = [
+    { name: "Web Dasturlash", link: "/" },
+    { name: "Mobile Dasturlash", link: "/" },
+    { name: "Grafik Dizayn", link: "/" },
+    { name: "Sun'iy Intellekt", link: "/" },
+    { name: "Ma'lumotlar Tahlili", link: "/" },
+    { name: "Kiberxavfsizlik", link: "/" },
+    { name: "users", link: "/Users"},
+    { name: "light", link: "/Settings"},
+    { name: "dark",  link: "/Settings"},
+    { name: "IT", link: "/"},
+    { name: "Marketing", link: "/"},
+    { name: "Sport", link: "/"},
+    { name: "Albison Academy", link: "/"},
+    { name: "Astrum IT Academy", link: "/"},
+    { name: "Cambridge Learning Centre", link: "/"},
+    { name: "CoddyCamp IT ACADEMY", link: "/"},
+    { name: "EVEREST EDUCATION", link: "/"},
+    { name: "GUMMA XONIM ", link: "/"},
+    { name: "INTER NATION SCHOOL", link: "/"},
+    { name: "ISYSTEM IT ACADEMY", link: "/"},
+    { name: "MY SCHOOL", link: "/"},
+    { name: "NAJOT TA'LIM", link: "/"},
+    { name: "PROWEB", link: "/"},
+    { name: "Saodat you can delete it", link: "/"},
+    { name: "Saodat you can delete it2", link: "/"},
+    { name: "THOMPSON SCHOOL", link: "/"},
+    { name: "system", link: "/Settings"},
+  ];
+
+  const handleSearch = (e) => {
+    setQuery(e.target.value);
+    if (e.target.value) {
+      const filtered = suggestionsList.filter((item) =>
+        item.name.toLowerCase().includes(e.target.value.toLowerCase()) 
+      );
+      setSuggestions(filtered);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelect = (item) => {
+    navigate(item.link); 
+  };
+
   return (
-    <Navbar className={`ease-in-out sticky z-50 bg-opacity-100 transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
+    <Navbar className={`ease-in-out max-w-full sticky z-50 bg-opacity-100 transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
       <div className="relative mx-auto flex  items-center justify-between text-blue-gray-900">
         <IconButton
           variant="text"
@@ -280,6 +333,38 @@ export function ComplexNavbar() {
             <Bars3Icon className="h-8 w-8 stroke-2" />
           )}
         </IconButton>
+
+        <div className="w-full flex flex-col items-center relative">
+      <form
+        className="flex items-center justify-center w-full"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <input
+          type="search"
+          className="outline-none border-2 border-violet-800 rounded-tl-2xl rounded-bl-2xl py-1 text-2xl w-auto px-3"
+          placeholder="Search..."
+          value={query}
+          onChange={handleSearch}
+        />
+        <button
+          type="submit"
+          className="border-2 border-violet-800 rounded-tr-2xl rounded-br-2xl p-2"
+        >
+        <Search />
+        </button>
+      </form>
+
+      
+      {suggestions.length > 0 && (
+        <div className="absolute top-full left-[30%] w-full max-w-md bg-white shadow-lg rounded-md border border-gray-300 mt-2 z-50 max-h-60 overflow-y-auto">
+          {suggestions.map((item, index) => (
+            <div key={index} className="p-2 hover:bg-gray-200 cursor-pointer"
+        onClick={() => handleSelect(item)}>{item.name}</div>
+          ))}
+        </div>
+      )}
+    </div>
+
 
         {/* <div className="hidden lg:block">
           <NavList />

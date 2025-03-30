@@ -315,12 +315,12 @@ export function ComplexNavbar() {
   };
 
   return (
-    <Navbar className={`ease-in-out max-w-full sticky z-50 bg-opacity-100 transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
+    <Navbar className={`ease-in-out max-w-full dark:bg-gray-900 dark:text-white sticky z-50 bg-opacity-100 transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
       <div className="relative mx-auto flex  items-center justify-between text-blue-gray-900">
         <IconButton
           variant="text"
           size="lg"
-          className="md:hidden text-[#290a3f] active:bg-[#efd8ff] hover:bg-[#efd8ff] block"
+          className="md:hidden text-[#290a3f] dark:bg-gray-900 dark:text-white active:bg-[#efd8ff] hover:bg-[#efd8ff] block"
           onClick={side ? closeSidebar : openSidebar}
         >
           {side ? (
@@ -333,7 +333,7 @@ export function ComplexNavbar() {
         <IconButton
           variant="text"
           size="lg"
-          className="md:block hover:bg-[#efd8ff] active:bg-[#efd8ff] text-[#290a3f] hidden"
+          className="md:block hover:bg-[#efd8ff]  dark:bg-gray-900 dark:text-white active:bg-[#efd8ff] text-[#290a3f] hidden"
           onClick={open ? closeOpen : openOpen}
         >
           {open ? (

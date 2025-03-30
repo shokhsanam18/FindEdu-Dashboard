@@ -312,3 +312,43 @@ export const useCenterStore = create((set, get) => ({
     }
   },
 }));
+
+
+
+export const useThemeStore = create(
+  persist(
+    (set, get) => ({
+      theme: localStorage.getItem("theme") || "system",
+      setTheme: (newTheme) => {
+        set({ theme: newTheme });
+        localStorage.setItem("theme", newTheme);
+
+        const html = document.documentElement;
+        if (newTheme === "system") {
+          const systemPref = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+          html.className = systemPref;
+        } else {
+          html.className = newTheme;
+        }
+      },
+      applyTheme: () => {
+        const currentTheme = get().theme;
+        const html = document.documentElement;
+        if (currentTheme === "system") {
+          const systemPref = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+          html.className = systemPref;
+        } else {
+          html.className = currentTheme;
+        }
+      },
+    }),
+    {
+      name: "theme-store",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);

@@ -67,7 +67,7 @@ const CategoriesMajors = () => {
     if (error) return <p className="text-red-500">Ошибка: {error.message}</p>;
 
     return (
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-[clamp(12px,3vw,24px)] md:gap-[clamp(16px,4vw,32px)]">
+      <div className="grid  dark:bg-gray-900 grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-[clamp(12px,3vw,24px)] md:gap-[clamp(16px,4vw,32px)]">
         {data.map((item, index) => (
           <Card
             key={index}
@@ -87,12 +87,12 @@ const CategoriesMajors = () => {
   };
 
   return (
-    <div className="overflow-x-hidden">
-      <div className="w-full px-6 py-6 bg-gray-100">
+    <div className="overflow-x-hidden  dark:bg-gray-900">
+      <div className="w-full px-6 py-6 dark:bg-gray-900 bg-gray-100">
         <Title>Majors</Title>
         {renderCards(majors, isLoadingMajors, errorMajors)}
       </div>
-      <div className="w-full px-6 py-6 bg-gray-100">
+      <div className="w-full px-6 py-6 dark:bg-gray-900 bg-gray-100">
         <Title>Fields</Title>
         {renderCards(fields, isLoadingFields, errorFields)}
       </div>

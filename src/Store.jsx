@@ -162,9 +162,9 @@ export const useAuthStore = create(
       },
       
       fetchProfileImage: async (filename) => {
-        if (!filename) {
-          set({ profileImageUrl: null });
-          return;
+        if (!filename || filename === "image.jpg" || filename === "default.jpg") {
+          // You can tweak the condition to catch more default/broken names
+          return "https://via.placeholder.com/40";
         }
       
         try {
@@ -172,12 +172,13 @@ export const useAuthStore = create(
             responseType: "blob",
           });
       
-          const blobUrl = URL.createObjectURL(res.data);
-          set({ profileImageUrl: blobUrl });
-        } catch {
-          set({ profileImageUrl: null });
+          return URL.createObjectURL(res.data);
+        } catch (error) {
+          // Silently fail and return fallback
+          return "https://via.placeholder.com/40"; // or return null and handle in component
         }
-      },
+      }
+      
     }),
     {
       name: "auth-store",

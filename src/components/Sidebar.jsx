@@ -62,12 +62,6 @@ import { Link } from "react-router-dom";
             Settings
           </ListItem>
         </Link>
-          <ListItem className="hover:bg-[#efd8ff]  hover:text-[#290a3f]  focus:bg-[#efd8ff] text-[#5f1d8e] active:bg-[#efd8ff]">
-            <ListItemPrefix className="text-[#290a3f]">
-              <PowerIcon className="h-5 w-5" />
-            </ListItemPrefix>
-            Log Out
-          </ListItem>
         </List>
       </Card>
     );

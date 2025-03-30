@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";  
-import { useUserStore } from "../Store";
+import { useUserStore, useAuthStore } from "../Store";
 
 function Table() {
   const [users, setUsers] = useState([]);
@@ -8,18 +8,30 @@ function Table() {
   const [page, setPage] = useState(1);
   const usersPerPage = 150;
 
+  const [imageMap, setImageMap] = useState({}); // store blob URLs by user ID
+
   const fetchUsers = useUserStore((state) => state.fetchUsers);
   const editUser = useUserStore((state) => state.editUser);
   const deleteUser = useUserStore((state) => state.deleteUser);
+  const fetchProfileImage = useAuthStore((state) => state.fetchProfileImage);
 
-  // Load users when component mounts or page changes
+  // Load users on mount / page change
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       const data = await fetchUsers(page, usersPerPage);
       setUsers(data);
       setLoading(false);
+
+      // Fetch blob URLs for user images
+      for (const user of data) {
+        if (user.image && !imageMap[user.id]) {
+          const blobUrl = await fetchProfileImage(user.image);
+          setImageMap((prev) => ({ ...prev, [user.id]: blobUrl }));
+        }
+      }
     };
+
     load();
   }, [page, fetchUsers]);
 
@@ -41,6 +53,7 @@ function Table() {
 
   const totalPages = Math.ceil(users.length / usersPerPage);
   const currentUsers = users.slice((page - 1) * usersPerPage, page * usersPerPage);
+
 
   return (
     <div className="overflow-x-auto">
@@ -77,7 +90,7 @@ function Table() {
                 <td className="border p-2">******</td>
                 <td className="border p-2">
                   <img
-                    src={user.image || "https://via.placeholder.com/40"}
+                    src={imageMap[user.id] || "https://via.placeholder.com/40"}
                     alt="User"
                     className="w-10 h-10 rounded-full mx-auto"
                   />

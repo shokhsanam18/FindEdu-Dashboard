@@ -125,25 +125,22 @@
 
 // export default CentersManagement;
 
-
-
-
-
-
-
-
-
-
-
 import { useEffect } from "react";
-import { Card, CardBody, Typography, Spinner, IconButton } from "@material-tailwind/react";
+import {
+  Card,
+  CardBody,
+  Typography,
+  Spinner,
+  IconButton,
+} from "@material-tailwind/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import AddCenter from "./add";
 import { useCenterStore } from "../../Store";
 import { useAuthStore } from "../../Store";
 
 const CentersManagement = () => {
-  const { centers, fetchCenters, deleteCenter, loading, error } = useCenterStore();
+  const { centers, fetchCenters, deleteCenter, loading, error } =
+    useCenterStore();
   const { refreshTokenFunc } = useAuthStore();
 
   useEffect(() => {
@@ -168,16 +165,28 @@ const CentersManagement = () => {
               <tr>
                 <th className="border-b p-4">Nomi</th>
                 <th className="border-b p-4">Joylashuvi</th>
-                <th className="border-b p-4 text-right">Bajarish</th>
+                <th className="border-b p-4">Raqami</th>
+                <th className="border-b p-4">Viloyat</th>
+                <th className="border-b p-4">Yo'nalishi</th>
+
+                <th className="border-b p-4">Bajarish</th>
               </tr>
             </thead>
             <tbody>
               {centers.map((center) => (
                 <tr key={center.id}>
-                  <td className="border-b p-4">{center.name}</td>
-                  <td className="border-b p-4">{center.location}</td>
-                  <td className="border-b p-4 text-right">
-                    <IconButton color="red" onClick={() => deleteCenter(center.id)}>
+                  <td className="border-b p-4 text-black">{center.name}</td>
+                  <td className="border-b p-4 w-[100px]">{center.address}</td>
+                  <td className="border-b p-4">{center.phone}</td>
+                  <td className="border-b p-4">{center.regionId}</td>
+                  <td className="border-b p-4">{center.regionId}</td>
+                  <td className="border-b p-4">{center.majorsId}</td>
+
+                  <td className="border-b p-4">
+                    <IconButton
+                      color="red"
+                      onClick={() => deleteCenter(center.id)}
+                    >
                       <TrashIcon className="h-5 w-5" />
                     </IconButton>
                   </td>

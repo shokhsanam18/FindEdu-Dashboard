@@ -7,12 +7,40 @@ import Layout from "./components/Layout";
 import Settings from "./pages/Settings";
 import MyProfile from "./pages/MyProfile";
 import Login from "./pages/Login/Login";
-import { ThemeProvider } from "./components/context/theme";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuthStore, useThemeStore } from "./Store";
+import { useEffect } from "react";
+import { ThemeProvider } from "@material-tailwind/react";
 
 const queryClient = new QueryClient();
 
 function App() {
+
+  const theme = useThemeStore((state) => state.theme);
+  const applyTheme = useThemeStore((state) => state.applyTheme);
+
+useEffect(() => {
+  applyTheme();
+
+  if (theme === "system") {
+    const listener = () => applyTheme();
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }
+}, [theme]);
+
+  const fetchUserData = useAuthStore((state) => state.fetchUserData);
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  useEffect(() => {
+    // Try to fetch user data if token exists
+    if (accessToken) {
+      fetchUserData();
+    }
+  }, [accessToken, fetchUserData]);
+
+
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>

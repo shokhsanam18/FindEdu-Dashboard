@@ -28,6 +28,7 @@ import {
 } from "@heroicons/react/24/solid";
 import Sidebar  from "./MiniSidebar";
 import { useOpenStore, useSidebarStore } from "../Store";
+import { Search } from "lucide-react"
 
 // profile menu component
 const profileMenuItems = [
@@ -246,12 +247,17 @@ function ProfileMenu() {
 
 import { IconButton } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export function ComplexNavbar() {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const { side, openSidebar, closeSidebar } = useSidebarStore();
   const { open, openOpen, closeOpen } = useOpenStore();
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+  const [suggestions, setSuggestions] = useState([]); 
 
   // const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -262,13 +268,59 @@ export function ComplexNavbar() {
     );
   }, []);
 
+    const suggestionsList = [
+    { name: "Web Dasturlash", link: "/" },
+    { name: "Mobile Dasturlash", link: "/" },
+    { name: "Grafik Dizayn", link: "/" },
+    { name: "Sun'iy Intellekt", link: "/" },
+    { name: "Ma'lumotlar Tahlili", link: "/" },
+    { name: "Kiberxavfsizlik", link: "/" },
+    { name: "users", link: "/Users"},
+    { name: "light", link: "/Settings"},
+    { name: "dark",  link: "/Settings"},
+    { name: "IT", link: "/"},
+    { name: "Marketing", link: "/"},
+    { name: "Sport", link: "/"},
+    { name: "Albison Academy", link: "/"},
+    { name: "Astrum IT Academy", link: "/"},
+    { name: "Cambridge Learning Centre", link: "/"},
+    { name: "CoddyCamp IT ACADEMY", link: "/"},
+    { name: "EVEREST EDUCATION", link: "/"},
+    { name: "GUMMA XONIM ", link: "/"},
+    { name: "INTER NATION SCHOOL", link: "/"},
+    { name: "ISYSTEM IT ACADEMY", link: "/"},
+    { name: "MY SCHOOL", link: "/"},
+    { name: "NAJOT TA'LIM", link: "/"},
+    { name: "PROWEB", link: "/"},
+    { name: "Saodat you can delete it", link: "/"},
+    { name: "Saodat you can delete it2", link: "/"},
+    { name: "THOMPSON SCHOOL", link: "/"},
+    { name: "system", link: "/Settings"},
+  ];
+
+  const handleSearch = (e) => {
+    setQuery(e.target.value);
+    if (e.target.value) {
+      const filtered = suggestionsList.filter((item) =>
+        item.name.toLowerCase().includes(e.target.value.toLowerCase()) 
+      );
+      setSuggestions(filtered);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelect = (item) => {
+    navigate(item.link); 
+  };
+
   return (
-    <Navbar className={`ease-in-out sticky z-50 bg-opacity-100 transition-all duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
+    <Navbar className={`ease-in-out max-w-full dark:bg-gray-900 dark:text-white sticky z-50 bg-opacity-100 transition-all border-none duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>
       <div className="relative mx-auto flex  items-center justify-between text-blue-gray-900">
         <IconButton
           variant="text"
           size="lg"
-          className="md:hidden text-[#290a3f] active:bg-[#efd8ff] hover:bg-[#efd8ff] block"
+          className="md:hidden text-[#290a3f] dark:bg-gray-900 dark:text-white active:bg-[#efd8ff] hover:bg-[#efd8ff] block"
           onClick={side ? closeSidebar : openSidebar}
         >
           {side ? (
@@ -281,7 +333,7 @@ export function ComplexNavbar() {
         <IconButton
           variant="text"
           size="lg"
-          className="md:block hover:bg-[#efd8ff] active:bg-[#efd8ff] text-[#290a3f] hidden"
+          className="md:block hover:bg-[#efd8ff]  dark:bg-gray-900 dark:text-white active:bg-[#efd8ff] text-[#290a3f] hidden"
           onClick={open ? closeOpen : openOpen}
         >
           {open ? (
@@ -290,6 +342,27 @@ export function ComplexNavbar() {
             <Bars3Icon className="h-8 w-8 stroke-2" />
           )}
         </IconButton>
+
+        <div className="w-full flex flex-col items-center relative p-1">
+      <form className="relative flex items-center w-full max-w-lg bg-white shadow-md rounded-full border border-violet-600 p-1 overflow-hidden" onSubmit={(e) => e.preventDefault()}>
+        <input type="search" className="flex-grow outline-none text-base px-4 py-2 rounded-full w-full" placeholder="Search..." value={query}
+        onChange={handleSearch}/>
+        <button type="submit" className="bg-violet-600 hover:bg-violet-500 text-white rounded-full p-2 flex items-center justify-center shadow-sm transition-transform transform hover:scale-105">
+        <Search />
+        </button>
+      </form>
+
+      
+      {suggestions.length > 0 && (
+        <div className="absolute top-full mt-2 w-full max-w-lg bg-white shadow-lg rounded-md border border-gray-300 overflow-hidden max-h-48 overflow-y-auto animate-fade-in">
+          {suggestions.map((item, index) => (
+            <div key={index} className="p-2 hover:bg-violet-100 cursor-pointer transition-all text-smcursor-pointer"
+        onClick={() => handleSelect(item)}>{item.name}</div>
+          ))}
+        </div>
+      )}
+    </div>
+
 
         {/* <div className="hidden lg:block">
           <NavList />

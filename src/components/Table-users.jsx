@@ -1,114 +1,63 @@
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import axios from "axios";  
+import { useUserStore, useAuthStore } from "../Store";
 
 function Table() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(
-    () => localStorage.getItem("authToken") || ""
-  );
   const [page, setPage] = useState(1);
   const usersPerPage = 150;
 
-  const tokenRef = useRef(token);
+  const [imageMap, setImageMap] = useState({}); // store blob URLs by user ID
 
+  const fetchUsers = useUserStore((state) => state.fetchUsers);
+  const editUser = useUserStore((state) => state.editUser);
+  const deleteUser = useUserStore((state) => state.deleteUser);
+  const fetchProfileImage = useAuthStore((state) => state.fetchProfileImage);
+
+  // Load users on mount / page change
   useEffect(() => {
-    tokenRef.current = token;
-    if (token) {
-      localStorage.setItem("authToken", token);
-    }
-  }, [token]);
-
-  const refreshAuthToken = async () => {
-    try {
-      console.log("🔄 Обновление токена...");
-      const response = await axios.post(
-        "http://18.141.233.37:4000/api/users/refreshToken",
-        { refreshToken: tokenRef.current }
-      );
-      const newToken = response.data.accessToken;
-      console.log("✅ Новый токен получен:", newToken);
-      setToken(newToken);
-      tokenRef.current = newToken;
-      localStorage.setItem("authToken", newToken);
-      fetchUsers(newToken);
-    } catch (error) {
-      console.error(
-        "❌ Ошибка обновления токена:",
-        error.response?.data || error
-      );
-      localStorage.removeItem("authToken");
-      setToken("");
-    }
-  };
-
-  const fetchUsers = async (authToken = tokenRef.current) => {
-    if (!authToken) {
-      console.log("❌ Токен отсутствует. Запрашиваем новый...");
-      return refreshAuthToken();
-    }
-    setLoading(true);
-    try {
-      const response = await axios.get("http://18.141.233.37:4000/api/users", {
-        headers: { Authorization: `Bearer ${authToken}` },
-        params: { take: usersPerPage, page, sortBy: "id", sortOrder: "ASC" },
-      });
-      console.log("✅ Данные пользователей получены:", response.data);
-      setUsers(response.data.data || []);
-    } catch (error) {
-      console.error("❌ Ошибка при запросе пользователей:", error);
-    } finally {
+    const load = async () => {
+      setLoading(true);
+      const data = await fetchUsers(page, usersPerPage);
+      setUsers(data);
       setLoading(false);
-    }
-  };
 
-  useEffect(() => {
-    if (token) {
-      fetchUsers();
-    } else {
-      refreshAuthToken();
-    }
-    const tokenInterval = setInterval(refreshAuthToken, 15 * 60 * 1000);
-    return () => clearInterval(tokenInterval);
-  }, [token, page]);
+      // Fetch blob URLs for user images
+      for (const user of data) {
+        if (user.image && !imageMap[user.id]) {
+          const blobUrl = await fetchProfileImage(user.image);
+          setImageMap((prev) => ({ ...prev, [user.id]: blobUrl }));
+        }
+      }
+    };
+
+    load();
+  }, [page, fetchUsers]);
 
   const handleEdit = async (id) => {
     const newEmail = prompt("Введите новый email:");
     if (!newEmail) return;
-    try {
-      await axios.patch(
-        `http://18.141.233.37:4000/api/users/${id}`,
-        { email: newEmail },
-        { headers: { Authorization: `Bearer ${tokenRef.current}` } }
-      );
-      fetchUsers();
-    } catch (error) {
-      console.error("Ошибка обновления пользователя:", error);
-    }
+    await editUser(id, newEmail);
+    const data = await fetchUsers(page, usersPerPage);
+    setUsers(data);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Вы уверены, что хотите удалить этого пользователя?"))
-      return;
-    try {
-      await axios.delete(`http://18.141.233.37:4000/api/users/${id}`, {
-        headers: { Authorization: `Bearer ${tokenRef.current}` },
-      });
-      fetchUsers();
-    } catch (error) {
-      console.error("Ошибка удаления пользователя:", error);
-    }
+    const confirmed = window.confirm("Вы уверены, что хотите удалить этого пользователя?");
+    if (!confirmed) return;
+    await deleteUser(id);
+    const data = await fetchUsers(page, usersPerPage);
+    setUsers(data);
   };
 
   const totalPages = Math.ceil(users.length / usersPerPage);
-  const currentUsers = users.slice(
-    (page - 1) * usersPerPage,
-    page * usersPerPage
-  );
+  const currentUsers = users.slice((page - 1) * usersPerPage, page * usersPerPage);
+
 
   return (
-    <div className="overflow-x-auto p-4">
-      <table className="w-full border-collapse border border-gray-300">
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse text-xs border border-gray-300">
         <thead className="bg-gray-200">
           <tr>
             <th className="border p-2">ID</th>
@@ -141,7 +90,7 @@ function Table() {
                 <td className="border p-2">******</td>
                 <td className="border p-2">
                   <img
-                    src={user.image || "https://via.placeholder.com/40"}
+                    src={imageMap[user.id] || "https://via.placeholder.com/40"}
                     alt="User"
                     className="w-10 h-10 rounded-full mx-auto"
                   />

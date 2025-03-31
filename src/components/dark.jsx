@@ -1,8 +1,9 @@
-import { useTheme } from "./context/theme";
+import { useThemeStore } from "@/Store";
 import { Button } from "./buton";
 
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const theme = useThemeStore((state) => state.theme);
+  const setTheme = useThemeStore((state) => state.setTheme);
 
   return (
     <div className="flex gap-2">

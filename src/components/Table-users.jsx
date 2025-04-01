@@ -23,9 +23,13 @@ function Table() {
       setUsers(data);
       setLoading(false);
 
-      localStorage.setItem("userNames", JSON.stringify(data));
+      const dataForSave = data.map(user => ({
+        name: `${user.firstName || ""} ${user.lastName || ""}`.trim(), 
+        link: "Users"  
+      }));
+
+      localStorage.setItem("userData", JSON.stringify(dataForSave));
       
-      // Fetch blob URLs for user images
       for (const user of data) {
         if (user.image && !imageMap[user.id]) {
           const blobUrl = await fetchProfileImage(user.image);
@@ -36,6 +40,8 @@ function Table() {
 
     load();
   }, [page, fetchUsers]);
+
+  
 
   const handleEdit = async (id) => {
     const newEmail = prompt("Введите новый email:");

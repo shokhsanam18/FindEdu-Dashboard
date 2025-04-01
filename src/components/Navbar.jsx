@@ -250,6 +250,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import theme from "@material-tailwind/react/theme";
 
 export function ComplexNavbar() {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
@@ -272,17 +273,17 @@ export function ComplexNavbar() {
 
   const fields = JSON.parse(localStorage.getItem("fields")) || [];
 const majors = JSON.parse(localStorage.getItem("majors")) || [];
-const userNames = JSON.parse(localStorage.getItem("userNames")) || [];
-const Centers = JSON.parse(localStorage.getItem("centers")) || [];
+const userData = JSON.parse(localStorage.getItem("userData")) || [];
+const Centers = JSON.parse(localStorage.getItem("Centers")) || [];
+const theme = [
+  {name: "light", link: "/Settings"},
+  {name: "dark", link: "/Settings"},
+]
 
-// Agar `userNames` oddiy array bo'lsa, uni obyektlarga o‘giramiz
-const formattedUserNames = userNames.map(name => ({ name }));
+const formattedUserNames = userData.map(data => ({ name: data.name, link: data.link }));
 const formattedCenters = Centers.map(center => ({ name: center.name }));
+const CombinedData = [...fields, ...majors, ...formattedUserNames, ...formattedCenters, ...theme];
 
-// Barcha ma'lumotlarni birlashtirish
-const CombinedData = [...fields, ...majors, ...formattedUserNames, ...formattedCenters];
-
-// Search funksiyasi
 const handleSearchFromLocalStorage = (e) => {
   setQuery(e.target.value);
 
@@ -298,9 +299,30 @@ const handleSearchFromLocalStorage = (e) => {
   }
 };
 
-  const handleSelect = (item) => {
-    navigate(item.link); 
-  };
+const handleSelect = (item) => {
+  const theme = [
+    {name: "light", link: "/Settings"},
+    {name: "dark", link: "/Settings"},
+  ]
+  const users = (JSON.parse(localStorage.getItem("userData")) || [])
+  const majors = (JSON.parse(localStorage.getItem("majors")) || [])
+  const centers = (JSON.parse(localStorage.getItem("Centers")) || [])
+  const Theme = theme.map((item) => ({ name: item.name, link: item.link }));
+  const savedData = [...users, ...majors, ...centers, ...Theme];  
+
+
+
+const foundItem = savedData ? 
+  savedData.find((data) => data?.name?.trim() === item?.name?.trim()) 
+  : savedData === "light" || savedData === "dark" ? navigate("/Settings") : null;
+
+  if (foundItem) {
+    navigate(foundItem.link); 
+  } else {
+    console.error("Link not found!", { savedData, item });
+}}
+
+
 
   return (
     <Navbar className={`ease-in-out max-w-full dark:bg-gray-900 dark:text-white sticky z-50 bg-opacity-100 transition-all border-none duration-300 rounded-none  shadow-none top-0 right-0 ${open ? 'md:w-full' : 'md:w-full'}`}>

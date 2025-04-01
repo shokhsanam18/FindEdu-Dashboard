@@ -21,14 +21,14 @@ export const Title = ({ children }) => (
 );
 
 const fetchMajors = async () => {
-  const response = await fetch("http://18.141.233.37:4000/api/major");
+  const response = await fetch("https://findcourse.net.uz/api/major");
   if (!response.ok) throw new Error("Ошибка загрузки данных");
   const data = await response.json();
   return data.data || [];
 };
 
 const fetchFields = async () => {
-  const response = await fetch("http://18.141.233.37:4000/api/fields");
+  const response = await fetch("https://findcourse.net.uz/api/fields");
   if (!response.ok) throw new Error("Ошибка загрузки данных");
   const data = await response.json();
   return data.data || [];

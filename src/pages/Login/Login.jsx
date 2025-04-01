@@ -20,7 +20,7 @@ import {
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 
-const API_BASE = "http://18.141.233.37:4000/api";
+const API_BASE = "https://findcourse.net.uz/api";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),

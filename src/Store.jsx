@@ -16,7 +16,7 @@ export const useOpenStore = create((set) => ({
 
 import { toast } from "sonner";
 
-const API_BASE = "http://18.141.233.37:4000/api";
+const API_BASE = "https://findcourse.net.uz/api";
 
 export const useAuthStore = create(
   persist(

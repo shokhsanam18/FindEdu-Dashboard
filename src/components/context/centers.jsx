@@ -132,9 +132,11 @@ import {
   Typography,
   Spinner,
   IconButton,
+  Popover,
+  PopoverHandler,
+  PopoverContent,
 } from "@material-tailwind/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import AddCenter from "./add";
 import { useCenterStore } from "../../Store";
 import { useAuthStore } from "../../Store";
 
@@ -149,46 +151,65 @@ const CentersManagement = () => {
     return () => clearInterval(tokenInterval);
   }, [fetchCenters, refreshTokenFunc]);
 
+  const renderCellWithPopover = (text) => (
+    <Popover placement="bottom-start">
+      <PopoverHandler>
+        <Typography className="truncate w-full max-w-[150px] cursor-pointer inline-block">
+          {text || "N/A"}
+        </Typography>
+      </PopoverHandler>
+      <PopoverContent>{text || "N/A"}</PopoverContent>
+    </Popover>
+  );
+
   return (
-    <Card className="mt-6 p-4">
+    <Card className="mt-6 p-4 overflow-hidden">
       <Typography variant="h4" color="blue-gray">
         O'quv Markazlari
       </Typography>
       {error && <Typography color="red">{error}</Typography>}
-      {/* <AddCenter /> */}
-      <CardBody className="overflow-x-auto p-0">
+      <CardBody className="overflow-auto p-0">
         {loading ? (
           <Spinner className="mx-auto my-10" />
         ) : (
-          <table className="w-full min-w-max table-auto text-left">
+          <table className="w-full table-auto text-left">
             <thead>
               <tr>
-                <th className="border-b p-4">Nomi</th>
-                <th className="border-b p-4">Joylashuvi</th>
-                <th className="border-b p-4">Raqami</th>
-                <th className="border-b p-4">Viloyat</th>
-                <th className="border-b p-4">Yo'nalishi</th>
-
-                <th className="border-b p-4">Bajarish</th>
+                <th className="border-b p-4 w-1/6">Nomi</th>
+                <th className="border-b p-4 w-1/6">Joylashuvi</th>
+                <th className="border-b p-4 w-1/6">Raqami</th>
+                <th className="border-b p-4 w-1/6">Viloyat</th>
+                <th className="border-b p-4 w-1/6">Yo'nalishi</th>
+                <th className="border-b p-4 w-1/6 text-center">Bajarish</th>
               </tr>
             </thead>
             <tbody>
               {centers.map((center) => (
                 <tr key={center.id}>
-                  <td className="border-b p-4 text-black">{center.name}</td>
-                  <td className="border-b p-4 w-[100px]">{center.address}</td>
-                  <td className="border-b p-4">{center.phone}</td>
-                  <td className="border-b p-4">{center.regionId}</td>
-                  <td className="border-b p-4">{center.regionId}</td>
-                  <td className="border-b p-4">{center.majorsId}</td>
-
-                  <td className="border-b p-4">
-                    <IconButton
-                      color="red"
-                      onClick={() => deleteCenter(center.id)}
-                    >
-                      <TrashIcon className="h-5 w-5" />
-                    </IconButton>
+                  <td className="border-b p-4 truncate max-w-[150px]">
+                    {renderCellWithPopover(center.name)}
+                  </td>
+                  <td className="border-b p-4 truncate max-w-[150px]">
+                    {renderCellWithPopover(center.address)}
+                  </td>
+                  <td className="border-b p-4 truncate max-w-[150px]">
+                    {renderCellWithPopover(center.phone)}
+                  </td>
+                  <td className="border-b p-4 truncate max-w-[150px]">
+                    {renderCellWithPopover(center.regionId)}
+                  </td>
+                  <td className="border-b p-4 truncate max-w-[150px]">
+                    {renderCellWithPopover(center.majorsId)}
+                  </td>
+                  <td className="border-b p-4 text-center">
+                    <div className="flex justify-center">
+                      <IconButton
+                        color="red"
+                        onClick={() => deleteCenter(center.id)}
+                      >
+                        <TrashIcon className="h-5 w-5" />
+                      </IconButton>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -24,6 +24,7 @@ const fetchMajors = async () => {
   const response = await fetch("https://findcourse.net.uz/api/major");
   if (!response.ok) throw new Error("Ошибка загрузки данных");
   const data = await response.json();
+  localStorage.setItem("majors", JSON.stringify(data.data));
   return data.data || [];
 };
 
@@ -31,6 +32,7 @@ const fetchFields = async () => {
   const response = await fetch("https://findcourse.net.uz/api/fields");
   if (!response.ok) throw new Error("Ошибка загрузки данных");
   const data = await response.json();
+  localStorage.setItem("fields", JSON.stringify(data.data));
   return data.data || [];
 };
 

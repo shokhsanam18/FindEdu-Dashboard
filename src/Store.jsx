@@ -279,6 +279,7 @@ export const useCenterStore = create((set, get) => ({
         headers: { Authorization: `Bearer ${token}` },
       });
       set({ centers: data?.data || [] });
+      localStorage.setItem("centers", JSON.stringify(data?.data || []));
     } catch (error) {
       console.error("❌ Error fetching centers:", error);
       if (error.response?.status === 401) {

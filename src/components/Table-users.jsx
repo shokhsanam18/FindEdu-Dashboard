@@ -23,6 +23,8 @@ function Table() {
       setUsers(data);
       setLoading(false);
 
+      localStorage.setItem("userNames", JSON.stringify(data));
+      
       // Fetch blob URLs for user images
       for (const user of data) {
         if (user.image && !imageMap[user.id]) {

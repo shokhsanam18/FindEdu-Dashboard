@@ -1,9 +1,12 @@
 import { useThemeStore } from "@/Store";
 import { Button } from "./buton";
+import { useEffect } from "react";
 
 export default function ThemeToggle() {
   const theme = useThemeStore((state) => state.theme);
   const setTheme = useThemeStore((state) => state.setTheme);
+
+
 
   return (
     <div className="flex gap-2">

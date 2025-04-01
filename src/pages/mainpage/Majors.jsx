@@ -24,6 +24,7 @@ const fetchMajors = async () => {
   const response = await fetch("http://18.141.233.37:4000/api/major");
   if (!response.ok) throw new Error("Ошибка загрузки данных");
   const data = await response.json();
+  localStorage.setItem("majors", JSON.stringify(data.data));
   return data.data || [];
 };
 
@@ -31,6 +32,7 @@ const fetchFields = async () => {
   const response = await fetch("http://18.141.233.37:4000/api/fields");
   if (!response.ok) throw new Error("Ошибка загрузки данных");
   const data = await response.json();
+  localStorage.setItem("fields", JSON.stringify(data.data));
   return data.data || [];
 };
 

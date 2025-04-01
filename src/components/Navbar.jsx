@@ -258,6 +258,7 @@ export function ComplexNavbar() {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]); 
+  const [localStorageSuggestions, setLocalStorageSuggestions] = useState([]);
 
   // const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -268,47 +269,34 @@ export function ComplexNavbar() {
     );
   }, []);
 
-    const suggestionsList = [
-    { name: "Web Dasturlash", link: "/" },
-    { name: "Mobile Dasturlash", link: "/" },
-    { name: "Grafik Dizayn", link: "/" },
-    { name: "Sun'iy Intellekt", link: "/" },
-    { name: "Ma'lumotlar Tahlili", link: "/" },
-    { name: "Kiberxavfsizlik", link: "/" },
-    { name: "users", link: "/Users"},
-    { name: "light", link: "/Settings"},
-    { name: "dark",  link: "/Settings"},
-    { name: "IT", link: "/"},
-    { name: "Marketing", link: "/"},
-    { name: "Sport", link: "/"},
-    { name: "Albison Academy", link: "/"},
-    { name: "Astrum IT Academy", link: "/"},
-    { name: "Cambridge Learning Centre", link: "/"},
-    { name: "CoddyCamp IT ACADEMY", link: "/"},
-    { name: "EVEREST EDUCATION", link: "/"},
-    { name: "GUMMA XONIM ", link: "/"},
-    { name: "INTER NATION SCHOOL", link: "/"},
-    { name: "ISYSTEM IT ACADEMY", link: "/"},
-    { name: "MY SCHOOL", link: "/"},
-    { name: "NAJOT TA'LIM", link: "/"},
-    { name: "PROWEB", link: "/"},
-    { name: "Saodat you can delete it", link: "/"},
-    { name: "Saodat you can delete it2", link: "/"},
-    { name: "THOMPSON SCHOOL", link: "/"},
-    { name: "system", link: "/Settings"},
-  ];
 
-  const handleSearch = (e) => {
-    setQuery(e.target.value);
-    if (e.target.value) {
-      const filtered = suggestionsList.filter((item) =>
-        item.name.toLowerCase().includes(e.target.value.toLowerCase()) 
-      );
-      setSuggestions(filtered);
-    } else {
-      setSuggestions([]);
-    }
-  };
+  const fields = JSON.parse(localStorage.getItem("fields")) || [];
+const majors = JSON.parse(localStorage.getItem("majors")) || [];
+const userNames = JSON.parse(localStorage.getItem("userNames")) || [];
+const Centers = JSON.parse(localStorage.getItem("centers")) || [];
+
+// Agar `userNames` oddiy array bo'lsa, uni obyektlarga o‘giramiz
+const formattedUserNames = userNames.map(name => ({ name }));
+const formattedCenters = Centers.map(center => ({ name: center.name }));
+
+// Barcha ma'lumotlarni birlashtirish
+const CombinedData = [...fields, ...majors, ...formattedUserNames, ...formattedCenters];
+
+// Search funksiyasi
+const handleSearchFromLocalStorage = (e) => {
+  setQuery(e.target.value);
+
+  if (e.target.value) {
+    const filteredCombinedData = CombinedData.filter((item) => {
+      const itemName = item?.name ? String(item.name) : "";
+      return itemName.toLowerCase().includes(e.target.value.toLowerCase());
+    });
+
+    setLocalStorageSuggestions(filteredCombinedData);
+  } else {
+    setLocalStorageSuggestions([]);
+  }
+};
 
   const handleSelect = (item) => {
     navigate(item.link); 
@@ -346,16 +334,16 @@ export function ComplexNavbar() {
         <div className="w-full flex flex-col items-center relative p-1">
       <form className="relative flex items-center w-full max-w-lg bg-white shadow-md rounded-full border border-violet-600 p-1 overflow-hidden" onSubmit={(e) => e.preventDefault()}>
         <input type="search" className="flex-grow outline-none text-base px-4 py-2 rounded-full w-full" placeholder="Search..." value={query}
-        onChange={handleSearch}/>
+         onChange={(e) => {handleSearchFromLocalStorage(e)}}/>
         <button type="submit" className="bg-violet-600 hover:bg-violet-500 text-white rounded-full p-2 flex items-center justify-center shadow-sm transition-transform transform hover:scale-105">
         <Search />
         </button>
       </form>
 
       
-      {suggestions.length > 0 && (
+      {query.length > 0 && localStorageSuggestions.length > 0 && (
         <div className="absolute top-full mt-2 w-full max-w-lg bg-white shadow-lg rounded-md border border-gray-300 overflow-hidden max-h-48 overflow-y-auto animate-fade-in">
-          {suggestions.map((item, index) => (
+          {localStorageSuggestions.map((item, index) => (
             <div key={index} className="p-2 hover:bg-violet-100 cursor-pointer transition-all text-smcursor-pointer"
         onClick={() => handleSelect(item)}>{item.name}</div>
           ))}

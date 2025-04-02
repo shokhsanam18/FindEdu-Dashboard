@@ -19,8 +19,6 @@ const LineGraph = () => {
     const loadUsers = async () => {
       try {
         const users = await fetchUsers();
-
-        // Group users by week of registration
         const weeklyData = users.reduce((acc, user) => {
           const week = moment(user.createdAt)
             .startOf("isoWeek")
@@ -29,7 +27,6 @@ const LineGraph = () => {
           return acc;
         }, {});
 
-        // Convert object to array for Recharts
         const chartData = Object.keys(weeklyData).map((week) => ({
           week,
           users: weeklyData[week],
@@ -46,33 +43,33 @@ const LineGraph = () => {
 
   return (
     <div className="w-full p-4 bg-white shadow rounded-lg m-5">
-      <h2 className="text-lg font-bold mb-2 text-center">User Growth</h2>
+      <h2 className="text-lg font-bold mb-2 text-center text-gray-800">
+        User Growth
+      </h2>
       <div className="w-full h-[250px] px-5">
-        {" "}
-        {/* Added horizontal padding */}
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
             margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="4 4" stroke="#ddd" />
             <XAxis
               dataKey="week"
               label={{
                 value: "Week",
                 position: "insideBottomRight",
                 offset: -5,
-                className: "text-xs",
+                className: "text-xs font-semibold text-gray-600",
               }}
               tickFormatter={(week) => moment(week).format("MMM DD")}
-              padding={{ right: 20 }} // Added padding to prevent cut-off
+              padding={{ right: 20 }}
             />
             <YAxis
               label={{
                 value: "Users",
                 angle: -90,
                 position: "insideLeft",
-                className: "text-xs",
+                className: "text-xs font-semibold text-gray-600",
               }}
               allowDecimals={false}
             />
@@ -80,9 +77,10 @@ const LineGraph = () => {
             <Line
               type="monotone"
               dataKey="users"
-              stroke="#8884d8"
-              strokeWidth={2}
-              dot={{ r: 3 }}
+              stroke="#4A0072" // Matching dashboard theme
+              strokeWidth={3} // Thicker line
+              dot={{ r: 4, strokeWidth: 2, stroke: "#4A0072", fill: "#fff" }} // Styled dots
+              strokeDasharray="2000 2000" // Animation effect
             />
           </LineChart>
         </ResponsiveContainer>

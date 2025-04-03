@@ -46,12 +46,12 @@ export default function CeoPage() {
       try {
         const [regionsRes, majorsRes] = await Promise.all([
           axios.get(
-            "http://18.141.233.37:4000/api/regions/search?page=1&limit=500",
+            "https://findcourse.net.uz/api/regions/search?page=1&limit=500",
             {
               headers: { Authorization: `Bearer ${token}` },
             }
           ),
-          axios.get("http://18.141.233.37:4000/api/major", {
+          axios.get("https://findcourse.net.uz/api/major", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -103,7 +103,7 @@ export default function CeoPage() {
       uploadData.append("image", imageFile);
 
       const response = await axios.post(
-        "http://18.141.233.37:4000/api/upload",
+        "https://findcourse.net.uz/api/upload",
         uploadData,
         {
           headers: {
@@ -115,7 +115,7 @@ export default function CeoPage() {
 
       formData.image = response.data.data;
 
-      await axios.post("http://18.141.233.37:4000/api/centers", formData, {
+      await axios.post("https://findcourse.net.uz/api/centers", formData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

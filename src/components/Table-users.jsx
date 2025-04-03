@@ -39,6 +39,13 @@ const Table = () => {
       setUsers(data);
       setLoading(false);
 
+      const dataForSave = data.map(user => ({
+        name: `${user.firstName || ""} ${user.lastName || ""}`.trim(), 
+        link: "Users"  
+      }));
+
+      localStorage.setItem("userData", JSON.stringify(dataForSave));
+      
       localStorage.setItem("userNames", JSON.stringify(data));
 
       for (const user of data) {
@@ -52,6 +59,7 @@ const Table = () => {
     load();
   }, [page, fetchUsers]);
 
+  
   const renderCellWithPopover = (text) => (
     <Popover placement="bottom-start">
       <PopoverHandler>

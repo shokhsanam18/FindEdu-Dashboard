@@ -8,43 +8,29 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useUserStore } from "../../Store";
-import moment from "moment";
+import { useCenterStore } from "../../Store";
 
-const LineGraph = () => {
+const CentersManagements = () => {
   const [data, setData] = useState([]);
-  const fetchUsers = useUserStore((state) => state.fetchUsers);
+  const { centers, fetchCenters } = useCenterStore();
 
   useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const users = await fetchUsers();
-        const weeklyData = users.reduce((acc, user) => {
-          const week = moment(user.createdAt)
-            .startOf("isoWeek")
-            .format("YYYY-MM-DD");
-          acc[week] = (acc[week] || 0) + 1;
-          return acc;
-        }, {});
-
-        const chartData = Object.keys(weeklyData).map((week) => ({
-          week,
-          users: weeklyData[week],
-        }));
-
-        setData(chartData);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
+    const loadCenters = async () => {
+      await fetchCenters();
+      const chartData = centers.map((center) => ({
+        name: center.name,
+        count: center.id,
+      }));
+      setData(chartData);
     };
 
-    loadUsers();
-  }, [fetchUsers]);
+    loadCenters();
+  }, [fetchCenters, centers]);
 
   return (
     <div className="w-full p-4 bg-white shadow rounded-lg m-5">
       <h2 className="text-lg font-bold mb-2 text-center text-gray-800">
-        User Growth
+        Centers Overview
       </h2>
       <div className="w-full h-[250px] px-5">
         <ResponsiveContainer width="100%" height="100%">
@@ -54,19 +40,19 @@ const LineGraph = () => {
           >
             <CartesianGrid strokeDasharray="4 4" stroke="#ddd" />
             <XAxis
-              dataKey="week"
+              dataKey="name"
               label={{
-                value: "Week",
+                value: "Centers",
                 position: "insideBottomRight",
                 offset: -5,
                 className: "text-xs font-semibold text-gray-600",
               }}
-              tickFormatter={(week) => moment(week).format("MMM DD")}
+              tickFormatter={(name) => name}
               padding={{ right: 20 }}
             />
             <YAxis
               label={{
-                value: "Users",
+                value: "Count",
                 angle: -90,
                 position: "insideLeft",
                 className: "text-xs font-semibold text-gray-600",
@@ -76,11 +62,11 @@ const LineGraph = () => {
             <Tooltip />
             <Line
               type="monotone"
-              dataKey="users"
-              stroke="#4A0072" // Matching dashboard theme
-              strokeWidth={3} // Thicker line
-              dot={{ r: 4, strokeWidth: 2, stroke: "#4A0072", fill: "#fff" }} // Styled dots
-              strokeDasharray="2000 2000" // Animation effect
+              dataKey="count"
+              stroke="#4A0072"
+              strokeWidth={3}
+              dot={{ r: 4, strokeWidth: 2, stroke: "#4A0072", fill: "#fff" }}
+              strokeDasharray="2000 2000"
             />
           </LineChart>
         </ResponsiveContainer>
@@ -89,4 +75,4 @@ const LineGraph = () => {
   );
 };
 
-export default LineGraph;
+export default CentersManagements;

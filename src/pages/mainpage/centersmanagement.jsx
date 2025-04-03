@@ -13,19 +13,21 @@ import { useCenterStore } from "../../Store";
 const CentersManagements = () => {
   const [data, setData] = useState([]);
   const { centers, fetchCenters } = useCenterStore();
-
   useEffect(() => {
     const loadCenters = async () => {
       await fetchCenters();
-      const chartData = centers.map((center) => ({
-        name: center.name,
-        count: center.id,
-      }));
-      setData(chartData);
     };
 
     loadCenters();
-  }, [fetchCenters, centers]);
+  }, [fetchCenters]);
+
+  useEffect(() => {
+    const chartData = centers.map((center) => ({
+      name: center.name,
+      count: center.id,
+    }));
+    setData(chartData);
+  }, [centers]);
 
   return (
     <div className="w-full p-4 bg-white shadow rounded-lg m-5">

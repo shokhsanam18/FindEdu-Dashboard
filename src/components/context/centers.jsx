@@ -142,20 +142,13 @@ import { useAuthStore } from "../../Store";
 const CentersManagement = () => {
   const { centers, fetchCenters, deleteCenter, loading, error } =
     useCenterStore();
-  const { refreshTokenFunc } = useAuthStore();
-  const [page, setPage] = useState(1);
-  const centersPerPage = 10;
-  const [totalPages, setTotalPages] = useState(1);
+  const { refreshTokenFunc } = useAuthStore(); // Make sure your auth store is updated similarly
 
   useEffect(() => {
-    const loadCenters = async () => {
-      await fetchCenters(page, centersPerPage);
-      setTotalPages(Math.ceil(centers.length / centersPerPage));
-    };
-    loadCenters();
+    fetchCenters();
     const tokenInterval = setInterval(() => refreshTokenFunc(), 15 * 60 * 1000);
     return () => clearInterval(tokenInterval);
-  }, [fetchCenters, refreshTokenFunc, page]);
+  }, [fetchCenters, refreshTokenFunc]);
 
   const renderCellWithPopover = (text) => (
     <Popover placement="bottom-start">
@@ -178,74 +171,47 @@ const CentersManagement = () => {
         {loading ? (
           <Spinner className="mx-auto my-10" />
         ) : (
-          <>
-            <table className="w-full table-auto text-left">
-              <thead>
-                <tr>
-                  <th className="border-b p-4 w-1/6">Nomi</th>
-                  <th className="border-b p-4 w-1/6">Joylashuvi</th>
-                  <th className="border-b p-4 w-1/6">Raqami</th>
-                  <th className="border-b p-4 w-1/6">Viloyat</th>
-                  <th className="border-b p-4 w-1/6">Yo'nalishi</th>
-                  <th className="border-b p-4 w-1/6 text-center">Bajarish</th>
+          <table className="w-full min-w-max table-auto text-left">
+            <thead>
+              <tr>
+                <th className="border-b p-4">Nomi</th>
+                <th className="border-b p-4">Joylashuvi</th>
+                <th className="border-b p-4">Raqami</th>
+                <th className="border-b p-4">Viloyat</th>
+                <th className="border-b p-4">Yo'nalishi</th>
+                <th className="border-b p-4">Bajarish</th>
+              </tr>
+            </thead>
+            <tbody>
+              {centers.map((center) => (
+                <tr key={center.id}>
+                  <td className="border-b p-4 text-black">
+                    {renderCellWithPopover(center.name)}
+                  </td>
+                  <td className="border-b p-4 w-[100px]">
+                    {renderCellWithPopover(center.address)}
+                  </td>
+                  <td className="border-b p-4">
+                    {renderCellWithPopover(center.phone)}
+                  </td>
+                  <td className="border-b p-4">
+                    {renderCellWithPopover(center.regionId)}
+                  </td>
+                  <td className="border-b p-4">
+                    {renderCellWithPopover(center.majorsId)}
+                  </td>
+                  <td className="border-b p-4">
+                    <IconButton
+                      color="red"
+                      onClick={() => deleteCenter(center.id)}
+                    >
+                      <TrashIcon className="h-5 w-5" />
+                    </IconButton>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {centers
-                  .slice((page - 1) * centersPerPage, page * centersPerPage)
-                  .map((center) => (
-                    <tr key={center.id}>
-                      <td className="border-b p-4 truncate max-w-[150px]">
-                        {renderCellWithPopover(center.name)}
-                      </td>
-                      <td className="border-b p-4 truncate max-w-[150px]">
-                        {renderCellWithPopover(center.address)}
-                      </td>
-                      <td className="border-b p-4 truncate max-w-[150px]">
-                        {renderCellWithPopover(center.phone)}
-                      </td>
-                      <td className="border-b p-4 truncate max-w-[150px]">
-                        {renderCellWithPopover(center.regionId)}
-                      </td>
-                      <td className="border-b p-4 truncate max-w-[150px]">
-                        {renderCellWithPopover(center.majorsId)}
-                      </td>
-                      <td className="border-b p-4 text-center">
-                        <div className="flex justify-center">
-                          <IconButton
-                            color="red"
-                            onClick={() => deleteCenter(center.id)}
-                          >
-                            <TrashIcon className="h-5 w-5" />
-                          </IconButton>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-            <div className="flex justify-center mt-4 gap-4">
-              <button
-                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                disabled={page <= 1}
-                className="px-4 py-2 rounded bg-blue-500 text-white"
-              >
-                Prev
-              </button>
-              <span>
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() =>
-                  setPage((prev) => Math.min(totalPages, prev + 1))
-                }
-                disabled={page >= totalPages}
-                className="px-4 py-2 rounded bg-blue-500 text-white"
-              >
-                Next
-              </button>
-            </div>
-          </>
+              ))}
+            </tbody>
+          </table>
         )}
       </CardBody>
     </Card>

@@ -1,110 +1,200 @@
-"use client";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
+// import { useEffect, useState } from "react";
+// import {
+//   LineChart,
+//   Line,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+//   ResponsiveContainer,
+// } from "recharts";
+// import { useUserStore } from "../../Store";
+// import moment from "moment";
+
+// const LineGraph = () => {
+//   const [data, setData] = useState([]);
+//   const fetchUsers = useUserStore((state) => state.fetchUsers);
+
+//   useEffect(() => {
+//     const loadUsers = async () => {
+//       try {
+//         const users = await fetchUsers();
+//         const weeklyData = users.reduce((acc, user) => {
+//           const week = moment(user.createdAt)
+//             .startOf("isoWeek")
+//             .format("YYYY-MM-DD");
+//           acc[week] = (acc[week] || 0) + 1;
+//           return acc;
+//         }, {});
+
+//         const chartData = Object.keys(weeklyData).map((week) => ({
+//           week,
+//           users: weeklyData[week],
+//         }));
+
+//         setData(chartData);
+//       } catch (error) {
+//         console.error("Error fetching users:", error);
+//       }
+//     };
+
+//     loadUsers();
+//   }, [fetchUsers]);
+
+//   return (
+//     <div className="w-full p-4 bg-white shadow rounded-lg m-5">
+//       <h2 className="text-lg font-bold mb-2 text-center text-gray-800">
+//         User Growth
+//       </h2>
+//       <div className="w-full h-[250px] px-5">
+//         <ResponsiveContainer width="100%" height="100%">
+//           <LineChart
+//             data={data}
+//             margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
+//           >
+//             <CartesianGrid strokeDasharray="4 4" stroke="#ddd" />
+//             <XAxis
+//               dataKey="week"
+//               label={{
+//                 value: "Week",
+//                 position: "insideBottomRight",
+//                 offset: -5,
+//                 className: "text-xs font-semibold text-gray-600",
+//               }}
+//               tickFormatter={(week) => moment(week).format("MMM DD")}
+//               padding={{ right: 20 }}
+//             />
+//             <YAxis
+//               label={{
+//                 value: "Users",
+//                 angle: -90,
+//                 position: "insideLeft",
+//                 className: "text-xs font-semibold text-gray-600",
+//               }}
+//               allowDecimals={false}
+//             />
+//             <Tooltip />
+//             <Line
+//               type="monotone"
+//               dataKey="users"
+//               stroke="#4A0072" // Matching dashboard theme
+//               strokeWidth={3} // Thicker line
+//               dot={{ r: 4, strokeWidth: 2, stroke: "#4A0072", fill: "#fff" }} // Styled dots
+//               strokeDasharray="2000 2000" // Animation effect
+//             />
+//           </LineChart>
+//         </ResponsiveContainer>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default LineGraph;
+
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
   XAxis,
   YAxis,
+  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
+import { useUserStore } from "../../Store";
 
-const data = [
-  { month: "Nov", users: 200, owners: 130, admins: 10 },
-  { month: "Dec", users: 210, owners: 125, admins: 8 },
-  { month: "Jan", users: 190, owners: 140, admins: 9 },
-  { month: "Feb", users: 220, owners: 135, admins: 7 },
-  { month: "Mar", users: 215, owners: 145, admins: 6 },
-  { month: "Apr", users: 230, owners: 155, admins: 5 },
-  { month: "May", users: 225, owners: 150, admins: 4 },
-  { month: "Jun", users: 240, owners: 165, admins: 3 },
-  { month: "Jul", users: 235, owners: 160, admins: 2 },
-];
+const LineGraph = () => {
+  const [data, setData] = useState([]);
+  const fetchUsers = useUserStore((state) => state.fetchUsers);
 
-const pieData = [
-  { name: "Users", value: 216, color: "#4B0082" },
-  { name: "Owners", value: 145, color: "#007BFF" },
-  { name: "Admins", value: 6, color: "#00CCCC" },
-];
+  const getStartOfWeek = (date) => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
+    return new Date(d.setDate(diff));
+  };
 
-export default function VisitorChart() {
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const users = await fetchUsers();
+        const weeklyData = users.reduce((acc, user) => {
+          const date = new Date(user.createdAt);
+          const weekStart = getStartOfWeek(date);
+          const week = formatDate(weekStart);
+          acc[week] = (acc[week] || 0) + 1;
+          return acc;
+        }, {});
+
+        const chartData = Object.keys(weeklyData).map((week) => ({
+          week,
+          users: weeklyData[week],
+        }));
+
+        setData(chartData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    loadUsers();
+  }, [fetchUsers]);
+
+  const formatWeekLabel = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
   return (
-    <div className="flex flex-col md:flex-row md:flex-wrap gap-4 m-5">
-      <Card className="w-full md:w-[48%] p-6 shadow-xl">
-        <CardBody>
-          <Typography variant="h5" className="mb-2 font-semibold text-gray-700">
-            Visitor Statistics
-          </Typography>
-          <Typography variant="small" className="text-gray-500">
-            Nov - July
-          </Typography>
-          <div className="mt-4 h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data}>
-                <XAxis dataKey="month" stroke="#999" />
-                <YAxis stroke="#999" />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="users"
-                  stroke="#4B0082"
-                  strokeWidth={2}
-                  name="Users"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="owners"
-                  stroke="#007BFF"
-                  strokeWidth={2}
-                  name="Owners"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="admins"
-                  stroke="#00CCCC"
-                  strokeWidth={2}
-                  name="Admins"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Pie Chart */}
-      <Card className="w-full md:w-[48%]">
-        <CardBody className="grid place-items-center px-4">
-          <Typography variant="h6" className="mb-4 font-semibold text-gray-700">
-            User Distribution
-          </Typography>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                innerRadius={60}
-                fill="#8884d8"
-                label
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </CardBody>
-      </Card>
+    <div className="w-full p-4 bg-white shadow rounded-lg m-5">
+      <h2 className="text-lg font-bold mb-2 text-center text-gray-800">
+        User Growth
+      </h2>
+      <div className="w-full h-[250px] px-5">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={data}
+            margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
+          >
+            <CartesianGrid strokeDasharray="4 4" stroke="#ddd" />
+            <XAxis
+              dataKey="week"
+              label={{
+                value: "Week",
+                position: "insideBottomRight",
+                offset: -5,
+                className: "text-xs font-semibold text-gray-600",
+              }}
+              tickFormatter={formatWeekLabel}
+              padding={{ right: 20 }}
+            />
+            <YAxis
+              label={{
+                value: "Users",
+                angle: -90,
+                position: "insideLeft",
+                className: "text-xs font-semibold text-gray-600",
+              }}
+              allowDecimals={false}
+            />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="users"
+              stroke="#4A0072"
+              strokeWidth={3}
+              dot={{ r: 4, strokeWidth: 2, stroke: "#4A0072", fill: "#fff" }}
+              strokeDasharray="2000 2000"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
-}
+};
+
+export default LineGraph;

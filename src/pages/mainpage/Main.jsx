@@ -1,11 +1,13 @@
 import React from "react";
 import CategoriesMajors from "./Majors";
-import VisitorChart from "./linegraph.jsx";
+import LineGraph from "./linegraph.jsx";
+import CentersManagements from "./centersmanagement.jsx";
 const Main = () => {
   return (
     <div className="flex-1 overflow-hidden">
       <CategoriesMajors />
-      <VisitorChart />
+      <LineGraph />
+      <CentersManagements />
     </div>
   );
 };

@@ -22,6 +22,7 @@ function Table() {
       const data = await fetchUsers(page, usersPerPage);
       setUsers(data);
       setLoading(false);
+      console.log(data)
 
       localStorage.setItem("userNames", JSON.stringify(data));
       
@@ -55,7 +56,6 @@ function Table() {
 
   const totalPages = Math.ceil(users.length / usersPerPage);
   const currentUsers = users.slice((page - 1) * usersPerPage, page * usersPerPage);
-
 
   return (
     <div className="overflow-x-auto">

@@ -38,6 +38,7 @@ const Table = () => {
       const data = await fetchUsers(page, usersPerPage);
       setUsers(data);
       setLoading(false);
+      console.log(data)
 
       const dataForSave = data.map(user => ({
         name: `${user.firstName || ""} ${user.lastName || ""}`.trim(), 

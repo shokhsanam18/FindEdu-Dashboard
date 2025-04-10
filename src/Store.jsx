@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import axios from "axios";
-
 export const useSidebarStore = create((set) => ({
   side: false,
   closeSidebar: () => set(() => ({ side: false })),
@@ -17,6 +16,7 @@ export const useOpenStore = create((set) => ({
 import { toast } from "sonner";
 
 const API_BASE = "https://findcourse.net.uz/api";
+
 
 export const useAuthStore = create(
   persist(

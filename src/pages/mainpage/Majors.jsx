@@ -65,11 +65,16 @@ const CategoriesMajors = () => {
   const [openMajorDialog, setOpenMajorDialog] = useState(false);
   const [openFieldDialog, setOpenFieldDialog] = useState(false);
   const [openCreateMajorDialog, setOpenCreateMajorDialog] = useState(false);
+  const [openCreateFieldDialog, setOpenCreateFieldDialog] = useState(false);
   const [newMajor, setNewMajor] = useState({
     name: "",
     image: "linke",
     fieldId: "",
     subjectId: null,
+  });
+  const [newField, setNewField] = useState({
+    name: "",
+    image: "linke",
   });
 
   const {
@@ -128,6 +133,43 @@ const CategoriesMajors = () => {
     },
   });
 
+  const createFieldMutation = useMutation({
+    mutationFn: async (fieldData) => {
+      const token = await useAuthStore.getState().refreshTokenFunc();
+      if (!token) throw new Error("Not authenticated");
+
+      const payload = {
+        name: String(fieldData.name).trim(),
+        image: "linke",
+      };
+
+      console.log("Field Payload:", payload);
+
+      const response = await fetch("https://findcourse.net.uz/api/fields", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create field");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fields"] });
+      setOpenCreateFieldDialog(false);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const handleOpenMajor = (major) => {
     setSelectedMajor(major);
     setOpenMajorDialog(true);
@@ -142,9 +184,18 @@ const CategoriesMajors = () => {
     createMajorMutation.mutate(newMajor);
   };
 
+  const handleCreateField = () => {
+    createFieldMutation.mutate(newField);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewMajor((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFieldInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewField((prev) => ({ ...prev, [name]: value }));
   };
 
   const renderCards = (data, isLoading, error, type) => {
@@ -153,17 +204,25 @@ const CategoriesMajors = () => {
 
     return (
       <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-[clamp(12px,3vw,24px)] md:gap-[clamp(16px,4vw,32px)]">
-        {type === "major" && (
+        {(type === "major" || type === "field") && (
           <Card
             shadow={true}
-            className="bg-green-600 hover:bg-green-700 text-white flex flex-col items-center justify-center p-6 min-w-[150px] h-40 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
-            onClick={() => setOpenCreateMajorDialog(true)}
+            className={`${
+              type === "major"
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-green-600 hover:bg-green-700"
+            } text-white flex flex-col items-center justify-center p-6 min-w-[150px] h-40 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer`}
+            onClick={() =>
+              type === "major"
+                ? setOpenCreateMajorDialog(true)
+                : setOpenCreateFieldDialog(true)
+            }
           >
             <div className="text-4xl p-4 rounded-lg transition-colors duration-300">
               <Icons.FaPlus size={40} />
             </div>
             <Typography variant="h6" className="mt-2 font-medium text-center">
-              Add New Major
+              Add New {type === "major" ? "Major" : "Field"}
             </Typography>
           </Card>
         )}
@@ -322,6 +381,48 @@ const CategoriesMajors = () => {
             }
           >
             {createMajorMutation.isLoading ? "Creating..." : "Create"}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
+      <Dialog
+        open={openCreateFieldDialog}
+        handler={() => setOpenCreateFieldDialog(false)}
+        size="sm"
+      >
+        <DialogHeader>Create New Field</DialogHeader>
+        <DialogBody>
+          <div className="flex flex-col gap-4">
+            <Input
+              label="Field Name"
+              name="name"
+              value={newField.name}
+              onChange={handleFieldInputChange}
+            />
+            <Input
+              label="Image URL"
+              name="image"
+              value={newField.image}
+              onChange={handleFieldInputChange}
+              disabled
+            />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            color="red"
+            onClick={() => setOpenCreateFieldDialog(false)}
+            className="mr-2"
+          >
+            Cancel
+          </Button>
+          <Button
+            color="green"
+            onClick={handleCreateField}
+            disabled={!newField.name || createFieldMutation.isLoading}
+          >
+            {createFieldMutation.isLoading ? "Creating..." : "Create"}
           </Button>
         </DialogFooter>
       </Dialog>

@@ -1,6 +1,12 @@
+// Store.jsx
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import axios from "axios";
+import { toast } from "sonner";
+
+const API_BASE = "https://findcourse.net.uz/api";
+
+// UI Stores
 export const useSidebarStore = create((set) => ({
   side: false,
   closeSidebar: () => set(() => ({ side: false })),
@@ -13,15 +19,50 @@ export const useOpenStore = create((set) => ({
   openOpen: () => set(() => ({ open: true })),
 }));
 
-import { toast } from "sonner";
+export const useThemeStore = create(
+  persist(
+    (set, get) => ({
+      theme: localStorage.getItem("theme") || "system",
+      setTheme: (newTheme) => {
+        set({ theme: newTheme });
+        localStorage.setItem("theme", newTheme);
 
-const API_BASE = "https://findcourse.net.uz/api";
+        const html = document.documentElement;
+        if (newTheme === "system") {
+          const systemPref = window.matchMedia("(prefers-color-scheme: dark)")
+            .matches
+            ? "dark"
+            : "light";
+          html.className = systemPref;
+        } else {
+          html.className = newTheme;
+        }
+      },
+      applyTheme: () => {
+        const currentTheme = get().theme;
+        const html = document.documentElement;
+        if (currentTheme === "system") {
+          const systemPref = window.matchMedia("(prefers-color-scheme: dark)")
+            .matches
+            ? "dark"
+            : "light";
+          html.className = systemPref;
+        } else {
+          html.className = currentTheme;
+        }
+      },
+    }),
+    {
+      name: "theme-store",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
 
-
+// Auth Store
 export const useAuthStore = create(
   persist(
     (set, get) => ({
-      // your current state
       user: null,
       accessToken: localStorage.getItem("accessToken") || null,
       refreshToken: localStorage.getItem("refreshToken") || null,
@@ -29,7 +70,7 @@ export const useAuthStore = create(
 
       fetchUserData: async () => {
         try {
-          const token = await get().refreshTokenFunc(false); // don't logout immediately on missing token
+          const token = await get().refreshTokenFunc(false);
           if (!token) return null;
 
           const { data } = await axios.get(`${API_BASE}/users/mydata`, {
@@ -48,7 +89,6 @@ export const useAuthStore = create(
 
           const userData = { ...data, role };
           set({ user: userData });
-          // console.log(userData);
           return userData;
         } catch (error) {
           console.warn(
@@ -62,8 +102,6 @@ export const useAuthStore = create(
       login: async (values) => {
         try {
           const res = await axios.post(`${API_BASE}/users/login`, values);
-          // console.log("🟢 Raw login response:", res); // 👈 Add this line
-
           const { accessToken, refreshToken } = res.data;
 
           if (accessToken && refreshToken) {
@@ -77,10 +115,7 @@ export const useAuthStore = create(
 
           return { success: false, message: "Tokens missing in response" };
         } catch (error) {
-          console.error(
-            "🔴 Login error response:",
-            error.response?.data || error.message
-          ); // 👈 Add this line too
+          console.error("Login error:", error.response?.data || error.message);
           return {
             success: false,
             message: error.response?.data?.message || "Login failed",
@@ -178,7 +213,6 @@ export const useAuthStore = create(
           filename === "image.jpg" ||
           filename === "default.jpg"
         ) {
-          // You can tweak the condition to catch more default/broken names
           return "https://via.placeholder.com/40";
         }
 
@@ -186,11 +220,9 @@ export const useAuthStore = create(
           const res = await axios.get(`${API_BASE}/image/${filename}`, {
             responseType: "blob",
           });
-
           return URL.createObjectURL(res.data);
         } catch (error) {
-          // Silently fail and return fallback
-          return "https://via.placeholder.com/40"; // or return null and handle in component
+          return "https://via.placeholder.com/40";
         }
       },
     }),
@@ -206,6 +238,7 @@ export const useAuthStore = create(
   )
 );
 
+// User Store
 export const useUserStore = create((set, get) => ({
   fetchUsers: async (page = 1, usersPerPage = 150) => {
     const token = await useAuthStore.getState().refreshTokenFunc();
@@ -223,7 +256,7 @@ export const useUserStore = create((set, get) => ({
       });
       return data?.data || [];
     } catch (error) {
-      console.error("❌ Ошибка при загрузке пользователей:", error);
+      console.error("Error fetching users:", error);
       return [];
     }
   },
@@ -240,9 +273,9 @@ export const useUserStore = create((set, get) => ({
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success("Пользователь обновлён");
+      toast.success("User updated");
     } catch (error) {
-      toast.error("Ошибка обновления пользователя");
+      toast.error("Error updating user");
       console.error("Edit error:", error);
     }
   },
@@ -255,14 +288,15 @@ export const useUserStore = create((set, get) => ({
       await axios.delete(`${API_BASE}/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success("Пользователь удалён");
+      toast.success("User deleted");
     } catch (error) {
-      toast.error("Ошибка удаления пользователя");
+      toast.error("Error deleting user");
       console.error("Delete error:", error);
     }
   },
 }));
 
+// Center Store (consolidated version)
 export const useCenterStore = create((set, get) => ({
   centers: [],
   loading: false,
@@ -285,118 +319,12 @@ export const useCenterStore = create((set, get) => ({
         link: "CEO",
       }));
 
-      localStorage.setItem("Centers", JSON.stringify(dataForSave))
+      localStorage.setItem("Centers", JSON.stringify(dataForSave));
     } catch (error) {
-      console.error("❌ Error fetching centers:", error);
+      console.error("Error fetching centers:", error);
       if (error.response?.status === 401) {
         await useAuthStore.getState().refreshTokenFunc();
-        return get().fetchCenters(); // Retry once after refreshing
-      }
-      set({ error: "Failed to load centers." });
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  addCenter: async (newCenter) => {
-    const token = await useAuthStore.getState().refreshTokenFunc();
-    if (!token) return;
-
-    try {
-      const { data } = await axios.post(`${API_BASE}/centers`, newCenter, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      set((state) => ({ centers: [...state.centers, data] }));
-      toast.success("Center added");
-    } catch (error) {
-      console.error("❌ Error adding center:", error);
-      toast.error("Failed to add center.");
-    }
-  },
-
-  deleteCenter: async (centerId) => {
-    const token = await useAuthStore.getState().refreshTokenFunc();
-    if (!token) return;
-
-    try {
-      await axios.delete(`${API_BASE}/centers/${centerId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      set((state) => ({
-        centers: state.centers.filter((c) => c.id !== centerId),
-      }));
-
-      toast.success("Center deleted");
-    } catch (error) {
-      console.error("❌ Error deleting center:", error);
-      toast.error("Failed to delete center.");
-    }
-  },
-}));
-
-export const useThemeStore = create(
-  persist(
-    (set, get) => ({
-      theme: localStorage.getItem("theme") || "system",
-      setTheme: (newTheme) => {
-        set({ theme: newTheme });
-        localStorage.setItem("theme", newTheme);
-
-        const html = document.documentElement;
-        if (newTheme === "system") {
-          const systemPref = window.matchMedia("(prefers-color-scheme: dark)")
-            .matches
-            ? "dark"
-            : "light";
-          html.className = systemPref;
-        } else {
-          html.className = newTheme;
-        }
-      },
-      applyTheme: () => {
-        const currentTheme = get().theme;
-        const html = document.documentElement;
-        if (currentTheme === "system") {
-          const systemPref = window.matchMedia("(prefers-color-scheme: dark)")
-            .matches
-            ? "dark"
-            : "light";
-          html.className = systemPref;
-        } else {
-          html.className = currentTheme;
-        }
-      },
-    }),
-    {
-      name: "theme-store",
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-);
-
-export const useCentersStore = create((set, get) => ({
-  centers: [],
-  loading: false,
-  error: null,
-
-  fetchCenters: async () => {
-    const token = await useAuthStore.getState().refreshTokenFunc();
-    if (!token) return;
-
-    set({ loading: true, error: null });
-
-    try {
-      const { data } = await axios.get(`${API_BASE}/centers`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      set({ centers: data?.data || [] });
-    } catch (error) {
-      console.error("❌ Error fetching centers:", error);
-      if (error.response?.status === 401) {
-        await useAuthStore.getState().refreshTokenFunc();
-        return get().fetchCenters(); // Retry once after refreshing
+        return get().fetchCenters();
       }
       set({ error: "Failed to load centers." });
     } finally {
@@ -408,7 +336,9 @@ export const useCentersStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
 
-      let token = get().accessToken || (await get().refreshTokenFunc());
+      let token =
+        useAuthStore.getState().accessToken ||
+        (await useAuthStore.getState().refreshTokenFunc());
       if (!token) throw new Error("No valid authentication token");
 
       const newCenter = {
@@ -417,50 +347,53 @@ export const useCentersStore = create((set, get) => ({
         phone: centerData.phone?.trim() || null,
         email: centerData.email?.trim() || "",
         description: centerData.description?.trim() || "",
-        regionId: String(centerData.regionId), // ✅ Convert to string if needed
+        regionId: String(centerData.regionId),
         majorsId: centerData.majorsId.length
           ? centerData.majorsId.map(String)
-          : ["1"], // ✅ Convert to strings if needed
+          : ["1"],
         image: centerData.image || null,
       };
 
-      console.log(
-        "🚀 Final Payload to API:",
-        JSON.stringify(newCenter, null, 2)
-      );
-
-      const response = await axios.post(`${API_BASE}/api/centers`, newCenter, {
+      const response = await axios.post(`${API_BASE}/centers`, newCenter, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("✅ Center added successfully:", response.data);
+      set((state) => ({ centers: [...state.centers, response.data] }));
+      toast.success("Center added");
     } catch (error) {
       console.error(
-        "❌ Error adding center:",
+        "Error adding center:",
         error.response?.data || error.message
       );
       set({ error: error.response?.data?.message || "Failed to add center" });
+      toast.error("Failed to add center.");
     } finally {
       set({ loading: false });
     }
   },
-  deleteCenter: async (centerId) => {
-    const token = await useAuthStore.getState().refreshTokenFunc();
-    if (!token) return;
 
+  deleteCenter: async (id) => {
     try {
-      await axios.delete(`${API_BASE}/centers/${centerId}`, {
+      const token = await useAuthStore.getState().refreshTokenFunc();
+      if (!token) {
+        toast.error("Authentication required");
+        return false;
+      }
+
+      await axios.delete(`${API_BASE}/centers/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       set((state) => ({
-        centers: state.centers.filter((c) => c.id !== centerId),
+        centers: state.centers.filter((c) => c.id !== id),
       }));
 
-      toast.success("Center deleted");
+      toast.success("Center deleted successfully");
+      return true;
     } catch (error) {
-      console.error("❌ Error deleting center:", error);
-      toast.error("Failed to delete center.");
+      console.error("Delete error:", error);
+      toast.error(error.response?.data?.message || "Failed to delete center");
+      return false;
     }
   },
 }));

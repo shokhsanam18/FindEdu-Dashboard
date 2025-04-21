@@ -138,8 +138,124 @@ import {
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useCenterStore } from "../../Store";
 import { useAuthStore } from "../../Store";
+import { Edit } from "lucide-react";
+import axios from "axios";
+
+
+
+
+const Modal = ({ center, isOpen, onClose, onSave }) => {
+  const [formData, setFormData] = useState(center || {});
+
+  useEffect(() => {
+    setFormData(center || {});
+  }, [center]);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSave = () => {
+    onSave(formData);
+  };
+  
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg w-[400px]">
+        <h2 className="text-xl font-bold mb-4">Markazni tahrirlash</h2>
+        <input
+          name="name"
+          value={formData.name || ""}
+          onChange={handleChange}
+          placeholder="Nomi"
+          className="border p-2 w-full mb-2"
+        />
+        <input
+          name="address"
+          value={formData.address || ""}
+          onChange={handleChange}
+          placeholder="Manzili"
+          className="border p-2 w-full mb-2"
+        />
+        <input
+          name="phone"
+          value={formData.phone || ""}
+          onChange={handleChange}
+          placeholder="Telefon"
+          className="border p-2 w-full mb-2"
+        />
+        <div className="flex justify-end gap-2 mt-4">
+          <button onClick={onClose} className="bg-gray-300 px-4 py-2 rounded">
+            Bekor qilish
+          </button>
+          <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded">
+            Saqlash
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const CentersManagement = () => {
+
+  const [selectedCenter, setSelectedCenter] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleEdit = (center) => {
+    setSelectedCenter(center);
+    setIsModalOpen(true);
+  };
+
+  const updateCenter = async (centerData) => {
+    
+    try {
+      const token = localStorage.getItem("accessToken");
+      console.log("TOKEN >>>", token);
+      console.log("Yuborilayotgan data:", centerData);
+  
+      if (!token) {
+        console.error("Token yo'q!");
+        return;
+      }
+  
+      // 🔥 Faqat kerakli fieldlarni ajratib olish
+      const payload = {
+        name: centerData.name,
+        address: centerData.address,
+        phone: centerData.phone,
+        image: centerData.image,
+      };
+  
+      await axios.patch(
+        `https://findcourse.net.uz/api/centers/${centerData.id}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      fetchCenters();
+    } catch (err) {
+      console.error("Update failed", err);
+      console.error("Update failed", err.response?.data || err.message);
+    }
+  };
+  
+
+  const handleSave = (updatedCenter) => {
+    updateCenter(updatedCenter);
+    setIsModalOpen(false);
+  };
+  
+
   const { centers, fetchCenters, deleteCenter, loading, error } =
     useCenterStore();
   const { refreshTokenFunc } = useAuthStore(); // Make sure your auth store is updated similarly
@@ -200,7 +316,10 @@ const CentersManagement = () => {
                   <td className="border-b p-4">
                     {renderCellWithPopover(center.majorsId)}
                   </td>
-                  <td className="border-b p-4">
+                  <td className="border-b p-4 flex gap-5">
+                    <IconButton color="amber" className="hover:shadow-md hover:shadow-yellow-600"   onClick={() => handleEdit(center)}>
+                      <Edit className="h-5 w-5"/>
+                    </IconButton>
                     <IconButton
                       color="red"
                       onClick={() => deleteCenter(center.id)}
@@ -214,6 +333,7 @@ const CentersManagement = () => {
           </table>
         )}
       </CardBody>
+      <Modal center={selectedCenter} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSave}/>
     </Card>
   );
 };

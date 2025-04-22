@@ -14,6 +14,54 @@ import { useCenterStore, useAuthStore } from "../../Store";
 import { toast } from "sonner";
 
 const CentersManagement = () => {
+  const [selectedCenter, setSelectedCenter] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleEdit = (center) => {
+    setSelectedCenter(center);
+    setIsModalOpen(true);
+  };
+
+  const updateCenter = async (centerData) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      console.log("TOKEN >>>", token);
+      console.log("Yuborilayotgan data:", centerData);
+
+      if (!token) {
+        console.error("Token yo'q!");
+        return;
+      }
+
+      // 🔥 Faqat kerakli fieldlarni ajratib olish
+      const payload = {
+        name: centerData.name,
+        address: centerData.address,
+        phone: centerData.phone,
+        image: centerData.image,
+      };
+
+      await axios.patch(
+        `https://findcourse.net.uz/api/centers/${centerData.id}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      fetchCenters();
+    } catch (err) {
+      console.error("Update failed", err);
+      console.error("Update failed", err.response?.data || err.message);
+    }
+  };
+
+  const handleSave = (updatedCenter) => {
+    updateCenter(updatedCenter);
+    setIsModalOpen(false);
+  };
+
   const { centers, fetchCenters, deleteCenter, loading, error } =
     useCenterStore();
   const { refreshTokenFunc } = useAuthStore();
@@ -96,7 +144,14 @@ const CentersManagement = () => {
                   <td className="border-b p-4">
                     {renderCellWithPopover(center.majorsId)}
                   </td>
-                  <td className="border-b p-4">
+                  <td className="border-b p-4 flex gap-5">
+                    <IconButton
+                      color="amber"
+                      className="hover:shadow-md hover:shadow-yellow-600"
+                      onClick={() => handleEdit(center)}
+                    >
+                      <Edit className="h-5 w-5" />
+                    </IconButton>
                     <IconButton
                       color="red"
                       onClick={() => handleDelete(center.id)}
@@ -115,6 +170,12 @@ const CentersManagement = () => {
           </table>
         )}
       </CardBody>
+      <Modal
+        center={selectedCenter}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+      />
     </Card>
   );
 };

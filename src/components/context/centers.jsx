@@ -8,32 +8,47 @@ import {
   Popover,
   PopoverHandler,
   PopoverContent,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Button,
+  Input,
 } from "@material-tailwind/react";
-import { TrashIcon } from "@heroicons/react/24/solid";
+import { TrashIcon, PencilIcon as Edit } from "@heroicons/react/24/solid";
 import { useCenterStore, useAuthStore } from "../../Store";
 import { toast } from "sonner";
+import axios from "axios";
 
 const CentersManagement = () => {
   const [selectedCenter, setSelectedCenter] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    address: "",
+    phone: "",
+    image: "",
+  });
 
   const handleEdit = (center) => {
     setSelectedCenter(center);
+    setFormData({
+      name: center.name,
+      address: center.address,
+      phone: center.phone,
+      image: center.image,
+    });
     setIsModalOpen(true);
   };
 
   const updateCenter = async (centerData) => {
     try {
       const token = localStorage.getItem("accessToken");
-      console.log("TOKEN >>>", token);
-      console.log("Yuborilayotgan data:", centerData);
-
       if (!token) {
-        console.error("Token yo'q!");
+        console.error("Token not found!");
         return;
       }
 
-      // 🔥 Faqat kerakli fieldlarni ajratib olish
       const payload = {
         name: centerData.name,
         address: centerData.address,
@@ -42,7 +57,7 @@ const CentersManagement = () => {
       };
 
       await axios.patch(
-        `https://findcourse.net.uz/api/centers/${centerData.id}`,
+        `https://findcourse.net.uz/api/centers/${selectedCenter.id}`,
         payload,
         {
           headers: {
@@ -51,14 +66,15 @@ const CentersManagement = () => {
         }
       );
       fetchCenters();
+      toast.success("Center updated successfully");
     } catch (err) {
       console.error("Update failed", err);
-      console.error("Update failed", err.response?.data || err.message);
+      toast.error("Failed to update center");
     }
   };
 
-  const handleSave = (updatedCenter) => {
-    updateCenter(updatedCenter);
+  const handleSave = () => {
+    updateCenter(formData);
     setIsModalOpen(false);
   };
 
@@ -69,11 +85,9 @@ const CentersManagement = () => {
 
   useEffect(() => {
     fetchCenters();
-
     const tokenInterval = setInterval(() => {
       refreshTokenFunc();
     }, 15 * 60 * 1000);
-
     return () => clearInterval(tokenInterval);
   }, [fetchCenters, refreshTokenFunc]);
 
@@ -170,12 +184,48 @@ const CentersManagement = () => {
           </table>
         )}
       </CardBody>
-      <Modal
-        center={selectedCenter}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
-      />
+
+      {/* Modal/Dialog for editing */}
+      <Dialog open={isModalOpen} handler={() => setIsModalOpen(false)}>
+        <DialogHeader>Edit Center</DialogHeader>
+        <DialogBody divider>
+          <div className="grid gap-4">
+            <Input
+              label="Name"
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+            />
+            <Input
+              label="Address"
+              value={formData.address}
+              onChange={(e) => setFormData({...formData, address: e.target.value})}
+            />
+            <Input
+              label="Phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+            />
+            <Input
+              label="Image URL"
+              value={formData.image}
+              onChange={(e) => setFormData({...formData, image: e.target.value})}
+            />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            color="red"
+            onClick={() => setIsModalOpen(false)}
+            className="mr-1"
+          >
+            <span>Cancel</span>
+          </Button>
+          <Button variant="gradient" color="green" onClick={handleSave}>
+            <span>Save</span>
+          </Button>
+        </DialogFooter>
+      </Dialog>
     </Card>
   );
 };

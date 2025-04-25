@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Typography,
@@ -33,27 +33,35 @@ export const Title = ({ children }) => (
 );
 
 // API functions
-const fetchReceptions = async (userRole, userId) => {
+const fetchReceptions = async (userRole, userId, take = 100000, page = 1) => {
   const token = await useAuthStore.getState().refreshTokenFunc();
   if (!token) throw new Error("Not authenticated");
 
-  // Only admin and superadmin can fetch all receptions
-  if (userRole !== "admin" && userRole !== "superadmin") {
+  if (userRole !== "ADMIN" && userRole !== "SUPERADMIN") {
     throw new Error("Unauthorized access");
   }
 
-  const response = await fetch("https://findcourse.net.uz/api/reseption", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  // ⬇️ ADD THIS DEBUG LOGGING HERE
+  // console.log("🔍 Fetching receptions with role:", userRole, "userId:", userId);
+
+  const response = await fetch(
+    `https://findcourse.net.uz/api/reseption?take=${take}&page=${page}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json(); // ⬅️ Move this up before checking .ok for logging
+  // console.log("🧪 Raw reception API response:", result);
 
   if (!response.ok) {
-    const errorData = await response.json();
+    const errorData = result;
     throw new Error(errorData.message || "Failed to fetch receptions");
   }
 
-  return response.json();
+  return result.data || [];
 };
 
 const fetchSingleReception = async (id, userRole, userId) => {
@@ -75,8 +83,8 @@ const fetchSingleReception = async (id, userRole, userId) => {
 
   // Check if user is owner or has admin privileges
   if (
-    userRole !== "admin" &&
-    userRole !== "superadmin" &&
+    userRole !== "ADMIN" &&
+    userRole !== "SUPERADMIN" &&
     reception.userId !== userId
   ) {
     throw new Error("Unauthorized access");
@@ -133,6 +141,18 @@ const ReceptionManagement = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [receptionToDelete, setReceptionToDelete] = useState(null);
   const [status, setStatus] = useState("PENDING");
+  // console.log("user", user)
+
+  const [enabledQuery, setEnabledQuery] = useState(false);
+
+  // const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (user?.role === "ADMIN" || user?.role === "SUPERADMIN") {
+      setEnabledQuery(true);
+    }
+  }, [user]);
+
 
   // Queries
   const {
@@ -142,16 +162,22 @@ const ReceptionManagement = () => {
     refetch: refetchReceptions,
   } = useQuery({
     queryKey: ["receptions"],
-    queryFn: () => fetchReceptions(user?.role, user?.id),
-    enabled: user?.role === "admin" || user?.role === "superadmin",
+    queryFn: () => fetchReceptions(user?.role, user?.data?.id),
+    enabled: enabledQuery,
   });
+
+
+  useEffect(() => {
+    // console.log("Receptions fetched:", center);
+  }, [receptions]);
+
 
   // Mutations
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }) => updateReceptionStatus(id, status),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["receptions"] });
       setOpenEditDialog(false);
+      refetchReceptions(); // ⬅️ force re-fetch
       toast.success("Reception status updated successfully");
     },
     onError: (error) => {
@@ -162,8 +188,8 @@ const ReceptionManagement = () => {
   const deleteReceptionMutation = useMutation({
     mutationFn: (id) => deleteReception(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["receptions"] });
       setOpenDeleteDialog(false);
+      refetchReceptions(); // ⬅️ force re-fetch
       toast.success("Reception deleted successfully");
     },
     onError: (error) => {
@@ -177,8 +203,20 @@ const ReceptionManagement = () => {
       const receptionData = await fetchSingleReception(
         reception.id,
         user?.role,
-        user?.id
+        user?.data?.id
       );
+      
+      // console.log("📦 Full receptionData:", receptionData);
+      // console.log("🎯 centerId from receptionData:", receptionData.centerId);
+  
+      // ⬇️ Fetch full center info
+      if (receptionData.centerId) {
+        const center = await fetchCenterById(receptionData.centerId);
+        receptionData.center = center; // patch it into the object
+      }
+
+      // console.log("🔎 Reception Data:", receptionData);
+  
       setSelectedReception(receptionData);
       setOpenReceptionDialog(true);
     } catch (error) {
@@ -208,18 +246,16 @@ const ReceptionManagement = () => {
     deleteReceptionMutation.mutate(receptionToDelete.id);
   };
 
-  const getStatusColor = (status) => {
+  const getBadgeColor = (status) => {
     switch (status) {
       case "PENDING":
-        return "bg-yellow-500";
-      case "APPROVED":
-        return "bg-green-500";
-      case "REJECTED":
-        return "bg-red-500";
-      case "COMPLETED":
-        return "bg-blue-500";
+        return "amber";
+      case "VISIT":
+        return "green";
+      case "NOT VISIT":
+        return "red";
       default:
-        return "bg-gray-500";
+        return "gray";
     }
   };
 
@@ -244,7 +280,7 @@ const ReceptionManagement = () => {
             className="relative bg-white dark:bg-gray-800 p-6 h-48 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg"
           >
             <div className="absolute top-2 right-2 flex space-x-2">
-              {(user?.role === "admin" || user?.role === "superadmin") && (
+              {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
                 <>
                   <Tooltip content="Edit">
                     <IconButton
@@ -278,21 +314,33 @@ const ReceptionManagement = () => {
               className="flex flex-col items-center justify-center h-full"
               onClick={() => handleOpenReception(reception)}
             >
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-3">
-                <Icons.FaUserCheck size={24} className="text-gray-600 dark:text-gray-300" />
-              </div>
+              <img
+                src={
+                  reception.user?.image
+                    ? `https://findcourse.net.uz/api/image/${reception.user.image}`
+                    : "https://via.placeholder.com/80"
+                }
+                alt="Profile"
+                className="w-16 h-16 rounded-full object-cover mb-3"
+              />
+
               <Typography variant="h6" className="font-medium text-center">
-                {reception.name || "No Name"}
+                {`${reception.user?.firstName || ""} ${reception.user?.lastName || ""}`}
               </Typography>
+
               <Badge
-                color={getStatusColor(reception.status)}
-                className="mt-2"
+                color={getBadgeColor(reception.status)}
+                className="mt-4 px-3"
                 content={reception.status}
               >
-                <Typography variant="small" className="text-white px-2 py-1 rounded-full">
+                <Typography
+                  variant="small"
+                  className="text-white px-2 py-1 rounded-full"
+                >
                   {reception.status}
                 </Typography>
               </Badge>
+
             </div>
           </Card>
         ))}
@@ -300,6 +348,31 @@ const ReceptionManagement = () => {
     );
   };
 
+
+  const fetchCenterById = async (centerId) => {
+    // console.log("📡 Fetching center ID:", centerId); // 👈 this line
+    const token = await useAuthStore.getState().refreshTokenFunc();
+    if (!token) {
+      console.warn("🚫 No token available");
+      return null;
+    }
+  
+    const response = await fetch(`https://findcourse.net.uz/api/centers/${centerId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  
+    const responseData = await response.json();
+  
+    if (!response.ok) {
+      console.warn("❌ Failed to fetch center:", responseData);
+      return null;
+    }
+  
+    // console.log("✅ Center data:", responseData?.data);
+    return responseData.data;
+  };
   return (
     <div className="overflow-x-hidden bg-gray-100 dark:bg-gray-900 p-6">
       <div className="flex justify-between items-center mb-6">
@@ -344,7 +417,7 @@ const ReceptionManagement = () => {
                 <div className="space-y-2">
                   <Typography variant="paragraph">
                     <span className="font-semibold">Status:</span>{" "}
-                    <span className={`px-2 py-1 rounded-full ${getStatusColor(selectedReception.status)} text-white`}>
+                    <span className={`px-2 py-1 rounded-full ${getBadgeColor(selectedReception.status)} text-white`}>
                       {selectedReception.status}
                     </span>
                   </Typography>
@@ -373,6 +446,45 @@ const ReceptionManagement = () => {
             <Spinner className="h-8 w-8" />
           )}
         </DialogBody>
+
+        <div className="col-span-2 mt-6">
+          <Typography variant="h6" className="font-bold mb-2">
+            Center Information
+          </Typography>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Typography variant="paragraph">
+                <span className="font-semibold">Center Name:</span> {selectedReception?.center?.name || "N/A"}
+              </Typography>
+              <Typography variant="paragraph">
+                <span className="font-semibold">Major:</span> {selectedReception?.major?.name || "N/A"}
+              </Typography>
+              <Typography variant="paragraph">
+                <span className="font-semibold">Filial Address:</span> {selectedReception?.filial?.address || "N/A"}
+              </Typography>
+              <Typography variant="paragraph">
+                <span className="font-semibold">Region:</span>{" "}
+                {selectedReception?.filial?.region?.name || selectedReception?.filial?.regionId || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <img
+                src={
+                  selectedReception?.filial?.image
+                    ? `https://findcourse.net.uz/api/image/${selectedReception.filial.image}`
+                    : "/placeholder-image.jpg"
+                }
+                alt="Filial"
+                className="w-full max-w-[300px] h-40 object-cover rounded-lg shadow"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/placeholder-image.jpg";
+                }}
+              />
+            </div>
+          </div>
+        </div>
         <DialogFooter>
           <Button
             color="blue"
@@ -399,9 +511,8 @@ const ReceptionManagement = () => {
               onChange={(value) => setStatus(value)}
             >
               <Option value="PENDING">PENDING</Option>
-              <Option value="APPROVED">APPROVED</Option>
-              <Option value="REJECTED">REJECTED</Option>
-              <Option value="COMPLETED">COMPLETED</Option>
+              <Option value="VISIT">VISIT</Option>
+              <Option value="NOT VISIT">NOT VISIT</Option>
             </Select>
           </div>
         </DialogBody>

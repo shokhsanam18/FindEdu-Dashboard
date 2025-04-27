@@ -9,9 +9,8 @@ import {
   DialogFooter,
 } from "@shadcn/ui";
 
-import { Button } from "@/components/ui/button"; // Custom Button component
+import { Button } from "@/components/ui/button";
 
-// Alert Dialog Component for confirming an action (like delete)
 const ShadcnAlertDialog = ({
   isOpen,
   onClose,

@@ -28,11 +28,10 @@ export const Title = ({ children }) => (
     style={{ color: "#007BFF" }}
     className="uppercase font-bold mb-4"
   >
-    {children}
+    {children} h
   </Typography>
 );
 
-// API functions
 const fetchReceptions = async (userRole, userId, take = 100000, page = 1) => {
   const token = await useAuthStore.getState().refreshTokenFunc();
   if (!token) throw new Error("Not authenticated");
@@ -40,9 +39,6 @@ const fetchReceptions = async (userRole, userId, take = 100000, page = 1) => {
   if (userRole !== "ADMIN" && userRole !== "SUPERADMIN") {
     throw new Error("Unauthorized access");
   }
-
-  // ⬇️ ADD THIS DEBUG LOGGING HERE
-  // console.log("🔍 Fetching receptions with role:", userRole, "userId:", userId);
 
   const response = await fetch(
     `https://findcourse.net.uz/api/reseption?take=${take}&page=${page}`,
@@ -53,8 +49,7 @@ const fetchReceptions = async (userRole, userId, take = 100000, page = 1) => {
     }
   );
 
-  const result = await response.json(); // ⬅️ Move this up before checking .ok for logging
-  // console.log("🧪 Raw reception API response:", result);
+  const result = await response.json();
 
   if (!response.ok) {
     const errorData = result;
@@ -68,11 +63,14 @@ const fetchSingleReception = async (id, userRole, userId) => {
   const token = await useAuthStore.getState().refreshTokenFunc();
   if (!token) throw new Error("Not authenticated");
 
-  const response = await fetch(`https://findcourse.net.uz/api/reseption/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetch(
+    `https://findcourse.net.uz/api/reseption/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -81,7 +79,6 @@ const fetchSingleReception = async (id, userRole, userId) => {
 
   const reception = await response.json();
 
-  // Check if user is owner or has admin privileges
   if (
     userRole !== "ADMIN" &&
     userRole !== "SUPERADMIN" &&
@@ -97,14 +94,17 @@ const updateReceptionStatus = async (id, status) => {
   const token = await useAuthStore.getState().refreshTokenFunc();
   if (!token) throw new Error("Not authenticated");
 
-  const response = await fetch(`https://findcourse.net.uz/api/reseption/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ status }),
-  });
+  const response = await fetch(
+    `https://findcourse.net.uz/api/reseption/${id}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    }
+  );
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -118,12 +118,15 @@ const deleteReception = async (id) => {
   const token = await useAuthStore.getState().refreshTokenFunc();
   if (!token) throw new Error("Not authenticated");
 
-  const response = await fetch(`https://findcourse.net.uz/api/reseption/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetch(
+    `https://findcourse.net.uz/api/reseption/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -141,11 +144,8 @@ const ReceptionManagement = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [receptionToDelete, setReceptionToDelete] = useState(null);
   const [status, setStatus] = useState("PENDING");
-  // console.log("user", user)
 
   const [enabledQuery, setEnabledQuery] = useState(false);
-
-  // const { user } = useAuthStore();
 
   useEffect(() => {
     if (user?.role === "ADMIN" || user?.role === "SUPERADMIN") {
@@ -153,8 +153,6 @@ const ReceptionManagement = () => {
     }
   }, [user]);
 
-
-  // Queries
   const {
     data: receptions = [],
     isLoading: isLoadingReceptions,
@@ -166,18 +164,13 @@ const ReceptionManagement = () => {
     enabled: enabledQuery,
   });
 
+  useEffect(() => {}, [receptions]);
 
-  useEffect(() => {
-    // console.log("Receptions fetched:", center);
-  }, [receptions]);
-
-
-  // Mutations
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }) => updateReceptionStatus(id, status),
     onSuccess: () => {
       setOpenEditDialog(false);
-      refetchReceptions(); // ⬅️ force re-fetch
+      refetchReceptions();
       toast.success("Reception status updated successfully");
     },
     onError: (error) => {
@@ -189,7 +182,7 @@ const ReceptionManagement = () => {
     mutationFn: (id) => deleteReception(id),
     onSuccess: () => {
       setOpenDeleteDialog(false);
-      refetchReceptions(); // ⬅️ force re-fetch
+      refetchReceptions();
       toast.success("Reception deleted successfully");
     },
     onError: (error) => {
@@ -197,7 +190,6 @@ const ReceptionManagement = () => {
     },
   });
 
-  // Handlers
   const handleOpenReception = async (reception) => {
     try {
       const receptionData = await fetchSingleReception(
@@ -205,18 +197,12 @@ const ReceptionManagement = () => {
         user?.role,
         user?.data?.id
       );
-      
-      // console.log("📦 Full receptionData:", receptionData);
-      // console.log("🎯 centerId from receptionData:", receptionData.centerId);
-  
-      // ⬇️ Fetch full center info
+
       if (receptionData.centerId) {
         const center = await fetchCenterById(receptionData.centerId);
-        receptionData.center = center; // patch it into the object
+        receptionData.center = center;
       }
 
-      // console.log("🔎 Reception Data:", receptionData);
-  
       setSelectedReception(receptionData);
       setOpenReceptionDialog(true);
     } catch (error) {
@@ -325,7 +311,9 @@ const ReceptionManagement = () => {
               />
 
               <Typography variant="h6" className="font-medium text-center">
-                {`${reception.user?.firstName || ""} ${reception.user?.lastName || ""}`}
+                {`${reception.user?.firstName || ""} ${
+                  reception.user?.lastName || ""
+                }`}
               </Typography>
 
               <Badge
@@ -340,7 +328,6 @@ const ReceptionManagement = () => {
                   {reception.status}
                 </Typography>
               </Badge>
-
             </div>
           </Card>
         ))}
@@ -348,29 +335,29 @@ const ReceptionManagement = () => {
     );
   };
 
-
   const fetchCenterById = async (centerId) => {
-    // console.log("📡 Fetching center ID:", centerId); // 👈 this line
     const token = await useAuthStore.getState().refreshTokenFunc();
     if (!token) {
       console.warn("🚫 No token available");
       return null;
     }
-  
-    const response = await fetch(`https://findcourse.net.uz/api/centers/${centerId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  
+
+    const response = await fetch(
+      `https://findcourse.net.uz/api/centers/${centerId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
     const responseData = await response.json();
-  
+
     if (!response.ok) {
       console.warn("❌ Failed to fetch center:", responseData);
       return null;
     }
-  
-    // console.log("✅ Center data:", responseData?.data);
+
     return responseData.data;
   };
   return (
@@ -381,7 +368,6 @@ const ReceptionManagement = () => {
 
       {renderReceptionCards()}
 
-      {/* Reception Details Dialog */}
       <Dialog
         open={openReceptionDialog}
         handler={() => setOpenReceptionDialog(false)}
@@ -397,16 +383,20 @@ const ReceptionManagement = () => {
                 </Typography>
                 <div className="space-y-2">
                   <Typography variant="paragraph">
-                    <span className="font-semibold">ID:</span> {selectedReception.id}
+                    <span className="font-semibold">ID:</span>{" "}
+                    {selectedReception.id}
                   </Typography>
                   <Typography variant="paragraph">
-                    <span className="font-semibold">Name:</span> {selectedReception.name || "N/A"}
+                    <span className="font-semibold">Name:</span>{" "}
+                    {selectedReception.name || "N/A"}
                   </Typography>
                   <Typography variant="paragraph">
-                    <span className="font-semibold">Email:</span> {selectedReception.email || "N/A"}
+                    <span className="font-semibold">Email:</span>{" "}
+                    {selectedReception.email || "N/A"}
                   </Typography>
                   <Typography variant="paragraph">
-                    <span className="font-semibold">Phone:</span> {selectedReception.phone || "N/A"}
+                    <span className="font-semibold">Phone:</span>{" "}
+                    {selectedReception.phone || "N/A"}
                   </Typography>
                 </div>
               </div>
@@ -417,17 +407,23 @@ const ReceptionManagement = () => {
                 <div className="space-y-2">
                   <Typography variant="paragraph">
                     <span className="font-semibold">Status:</span>{" "}
-                    <span className={`px-2 py-1 rounded-full ${getBadgeColor(selectedReception.status)} text-white`}>
+                    <span
+                      className={`px-2 py-1 rounded-full ${getBadgeColor(
+                        selectedReception.status
+                      )} text-white`}
+                    >
                       {selectedReception.status}
                     </span>
                   </Typography>
                   <Typography variant="paragraph">
                     <span className="font-semibold">Created At:</span>{" "}
-                    {new Date(selectedReception.createdAt).toLocaleString() || "N/A"}
+                    {new Date(selectedReception.createdAt).toLocaleString() ||
+                      "N/A"}
                   </Typography>
                   <Typography variant="paragraph">
                     <span className="font-semibold">Updated At:</span>{" "}
-                    {new Date(selectedReception.updatedAt).toLocaleString() || "N/A"}
+                    {new Date(selectedReception.updatedAt).toLocaleString() ||
+                      "N/A"}
                   </Typography>
                 </div>
               </div>
@@ -436,7 +432,10 @@ const ReceptionManagement = () => {
                   <Typography variant="h6" className="font-bold mb-2">
                     Notes
                   </Typography>
-                  <Typography variant="paragraph" className="bg-gray-100 dark:bg-gray-800 p-3 rounded">
+                  <Typography
+                    variant="paragraph"
+                    className="bg-gray-100 dark:bg-gray-800 p-3 rounded"
+                  >
                     {selectedReception.notes}
                   </Typography>
                 </div>
@@ -454,17 +453,22 @@ const ReceptionManagement = () => {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Typography variant="paragraph">
-                <span className="font-semibold">Center Name:</span> {selectedReception?.center?.name || "N/A"}
+                <span className="font-semibold">Center Name:</span>{" "}
+                {selectedReception?.center?.name || "N/A"}
               </Typography>
               <Typography variant="paragraph">
-                <span className="font-semibold">Major:</span> {selectedReception?.major?.name || "N/A"}
+                <span className="font-semibold">Major:</span>{" "}
+                {selectedReception?.major?.name || "N/A"}
               </Typography>
               <Typography variant="paragraph">
-                <span className="font-semibold">Filial Address:</span> {selectedReception?.filial?.address || "N/A"}
+                <span className="font-semibold">Filial Address:</span>{" "}
+                {selectedReception?.filial?.address || "N/A"}
               </Typography>
               <Typography variant="paragraph">
                 <span className="font-semibold">Region:</span>{" "}
-                {selectedReception?.filial?.region?.name || selectedReception?.filial?.regionId || "N/A"}
+                {selectedReception?.filial?.region?.name ||
+                  selectedReception?.filial?.regionId ||
+                  "N/A"}
               </Typography>
             </div>
 
@@ -496,7 +500,6 @@ const ReceptionManagement = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Edit Status Dialog */}
       <Dialog
         open={openEditDialog}
         handler={() => setOpenEditDialog(false)}
@@ -535,7 +538,6 @@ const ReceptionManagement = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={openDeleteDialog}
         handler={() => setOpenDeleteDialog(false)}
@@ -545,8 +547,8 @@ const ReceptionManagement = () => {
         <DialogBody>
           <Typography variant="paragraph" className="text-red-500">
             Are you sure you want to delete the reception{" "}
-            {receptionToDelete?.name ? `"${receptionToDelete.name}"` : ""}? This action cannot be
-            undone.
+            {receptionToDelete?.name ? `"${receptionToDelete.name}"` : ""}? This
+            action cannot be undone.
           </Typography>
         </DialogBody>
         <DialogFooter>

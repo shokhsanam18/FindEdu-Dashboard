@@ -67,7 +67,11 @@ const SubjectsManagement = () => {
   const [openDeleteSubjectDialog, setOpenDeleteSubjectDialog] = useState(false);
   const [subjectToDelete, setSubjectToDelete] = useState(null);
   const [newSubject, setNewSubject] = useState({ name: "", image: "" });
-  const [editingSubject, setEditingSubject] = useState({ id: "", name: "", image: "" });
+  const [editingSubject, setEditingSubject] = useState({
+    id: "",
+    name: "",
+    image: "",
+  });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [editImageFile, setEditImageFile] = useState(null);
@@ -144,14 +148,17 @@ const SubjectsManagement = () => {
         image: imageUrl || subjectData.image,
       };
 
-      const response = await fetch(`https://findcourse.net.uz/api/subject/${subjectData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/subject/${subjectData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -177,12 +184,15 @@ const SubjectsManagement = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/subject/${subjectId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/subject/${subjectId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -224,7 +234,11 @@ const SubjectsManagement = () => {
       name: subject.name,
       image: subject.image,
     });
-    setEditImagePreview(subject.image ? `https://findcourse.net.uz/api/image/${subject.image}` : null);
+    setEditImagePreview(
+      subject.image
+        ? `https://findcourse.net.uz/api/image/${subject.image}`
+        : null
+    );
     setOpenEditSubjectDialog(true);
   };
 
@@ -264,7 +278,8 @@ const SubjectsManagement = () => {
 
   const renderSubjectCards = () => {
     if (isLoadingSubjects) return <Spinner className="h-8 w-8" />;
-    if (errorSubjects) return <p className="text-red-500">Error: {errorSubjects.message}</p>;
+    if (errorSubjects)
+      return <p className="text-red-500">Error: {errorSubjects.message}</p>;
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -314,14 +329,14 @@ const SubjectsManagement = () => {
                 </IconButton>
               </Tooltip>
             </div>
-            
-            <div 
+
+            <div
               className="flex flex-col items-center justify-center h-full"
               onClick={() => handleOpenSubject(subject)}
             >
               {subject.image ? (
-                <img 
-                  src={`https://findcourse.net.uz/api/image/${subject.image}`} 
+                <img
+                  src={`https://findcourse.net.uz/api/image/${subject.image}`}
                   alt={subject.name}
                   className="w-16 h-16 object-cover rounded-full mb-3"
                 />
@@ -349,7 +364,6 @@ const SubjectsManagement = () => {
         {renderSubjectCards()}
       </div>
 
-      {/* Subject Dialogs */}
       <Dialog
         open={openSubjectDialog}
         handler={() => setOpenSubjectDialog(false)}
@@ -361,8 +375,8 @@ const SubjectsManagement = () => {
         <DialogBody className="bg-transparent p-4 rounded-b-lg">
           <div className="flex flex-col items-center">
             {selectedSubject?.image ? (
-              <img 
-                src={`https://findcourse.net.uz/api/image/${selectedSubject.image}`} 
+              <img
+                src={`https://findcourse.net.uz/api/image/${selectedSubject.image}`}
                 alt={selectedSubject.name}
                 className="w-32 h-32 object-cover rounded-lg mb-4"
               />
@@ -402,9 +416,11 @@ const SubjectsManagement = () => {
               onChange={handleSubjectInputChange}
               required
             />
-            
+
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Subject Image</label>
+              <label className="text-sm font-medium text-gray-700">
+                Subject Image
+              </label>
               <input
                 type="file"
                 accept="image/*"
@@ -418,9 +434,9 @@ const SubjectsManagement = () => {
               />
               {imagePreview && (
                 <div className="mt-2">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                 </div>
@@ -466,14 +482,16 @@ const SubjectsManagement = () => {
               onChange={handleEditSubjectInputChange}
               required
             />
-            
+
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Subject Image</label>
+              <label className="text-sm font-medium text-gray-700">
+                Subject Image
+              </label>
               {editImagePreview && (
                 <div className="mb-2">
-                  <img 
-                    src={editImagePreview} 
-                    alt="Current" 
+                  <img
+                    src={editImagePreview}
+                    alt="Current"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                   <Typography variant="small" className="text-gray-600 mt-1">
@@ -481,7 +499,7 @@ const SubjectsManagement = () => {
                   </Typography>
                 </div>
               )}
-              
+
               <input
                 type="file"
                 accept="image/*"
@@ -495,9 +513,9 @@ const SubjectsManagement = () => {
               />
               {editImageFile && (
                 <div className="mt-2">
-                  <img 
-                    src={URL.createObjectURL(editImageFile)} 
-                    alt="New Preview" 
+                  <img
+                    src={URL.createObjectURL(editImageFile)}
+                    alt="New Preview"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                   <Typography variant="small" className="text-gray-600 mt-1">
@@ -539,7 +557,8 @@ const SubjectsManagement = () => {
         <DialogHeader>Delete Subject</DialogHeader>
         <DialogBody>
           <Typography variant="paragraph" className="text-red-500">
-            Are you sure you want to delete the subject "{subjectToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete the subject "{subjectToDelete?.name}
+            "? This action cannot be undone.
           </Typography>
         </DialogBody>
         <DialogFooter>

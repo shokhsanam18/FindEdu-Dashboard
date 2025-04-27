@@ -38,15 +38,15 @@ const Table = () => {
       const data = await fetchUsers(page, usersPerPage);
       setUsers(data);
       setLoading(false);
-      console.log(data)
+      console.log(data);
 
-      const dataForSave = data.map(user => ({
-        name: `${user.firstName || ""} ${user.lastName || ""}`.trim(), 
-        link: "Users"  
+      const dataForSave = data.map((user) => ({
+        name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+        link: "Users",
       }));
 
       localStorage.setItem("userData", JSON.stringify(dataForSave));
-      
+
       localStorage.setItem("userNames", JSON.stringify(data));
 
       for (const user of data) {
@@ -60,7 +60,6 @@ const Table = () => {
     load();
   }, [page, fetchUsers]);
 
-  
   const renderCellWithPopover = (text) => (
     <Popover placement="bottom-start">
       <PopoverHandler>
@@ -147,7 +146,7 @@ const Table = () => {
                           alt="User"
                           className="w-10 h-10 rounded-full mx-auto object-cover"
                           onError={(e) => {
-                            e.target.onerror = null; // prevent infinite loop
+                            e.target.onerror = null;
                             e.target.src =
                               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJKOCxJ4PWSjccLHucBQ-AlNhpiVx2ASk10lFfiNrG-QBOwwYkSGolTVZuKMZd7VcaKNk&usqp=CAU";
                           }}
@@ -219,7 +218,6 @@ const Table = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Delete User Modal */}
       <Dialog
         open={deleteUserId !== null}
         handler={() => setDeleteUserId(null)}

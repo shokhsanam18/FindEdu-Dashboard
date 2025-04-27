@@ -98,11 +98,9 @@ const Login = () => {
 
   const loginUser = async (values) => {
     const login = useAuthStore.getState().login;
-    // console.log("🟡 Login form values:", values);
 
     try {
       const result = await login(values);
-      // console.log("🟢 Response from /login:", result);
 
       if (result.success) {
         const role = result.role ? result.role.toUpperCase() : "USER";
@@ -179,7 +177,11 @@ const Login = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder="Email" {...field} className="text-black"/>
+                      <Input
+                        placeholder="Email"
+                        {...field}
+                        className="text-black"
+                      />
                     </FormControl>{" "}
                     <FormMessage />
                   </FormItem>
@@ -213,14 +215,6 @@ const Login = () => {
               </Button>
             </form>{" "}
           </Form>
-
-          {/* <p className="text-m text-gray-600 mt-4 text-center"> Don't have an account?{" "}
-<Link to="/register" className="text-purple-600 font-semibold hover:underline">Register</Link></p>
-<Link to="/forget">{" "}
-<h2 className="text-m text-center mt-6 underline cursor-pointer">
-              Forgot Password?
-            </h2>{" "}
-          </Link> */}
         </div>
       </div>
     </div>

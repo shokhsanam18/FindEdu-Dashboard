@@ -184,7 +184,6 @@ const CentersManagement = () => {
         )}
       </CardBody>
 
-      {/* Modal/Dialog for editing */}
       <Dialog open={isModalOpen} handler={() => setIsModalOpen(false)}>
         <DialogHeader>Edit Center</DialogHeader>
         <DialogBody divider>

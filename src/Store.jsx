@@ -1,4 +1,3 @@
-// Store.jsx
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import axios from "axios";
@@ -6,7 +5,6 @@ import { toast } from "sonner";
 
 const API_BASE = "https://findcourse.net.uz/api";
 
-// UI Stores
 export const useSidebarStore = create((set) => ({
   side: false,
   closeSidebar: () => set(() => ({ side: false })),
@@ -59,7 +57,6 @@ export const useThemeStore = create(
   )
 );
 
-// Auth Store
 export const useAuthStore = create(
   persist(
     (set, get) => ({
@@ -238,7 +235,6 @@ export const useAuthStore = create(
   )
 );
 
-// User Store
 export const useUserStore = create((set, get) => ({
   fetchUsers: async (page = 1, usersPerPage = 150) => {
     const token = await useAuthStore.getState().refreshTokenFunc();
@@ -296,7 +292,6 @@ export const useUserStore = create((set, get) => ({
   },
 }));
 
-// Center Store (consolidated version)
 export const useCenterStore = create((set, get) => ({
   centers: [],
   loading: false,

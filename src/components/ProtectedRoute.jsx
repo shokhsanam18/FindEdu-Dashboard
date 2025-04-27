@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   if (!accessToken) return <Navigate to="/Login" />;
 
   if (!user) {
-    return <div className="p-8 text-center">Loading user...</div>; // or a spinner
+    return <div className="p-8 text-center">Loading user...</div>;
   }
 
   if (requiredRole && user.role?.toUpperCase() !== requiredRole.toUpperCase()) {

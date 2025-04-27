@@ -72,11 +72,6 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
-/* @layer base {
-  * {
-    border-color: var(--border);
-  }
-} */
 
 @layer utilities {
   .border-border {
@@ -84,26 +79,6 @@
   }
 }
 
-/* Default (Light Mode) */
-body {
-  @apply bg-white text-black transition-colors duration-300;
-}
-
-/* Dark Mode */
-.dark body {
-  @apply bg-gray-900 text-white;
-}
-
-/* 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-} */
-/* Default Light Theme */
 html {
   background-color: white;
   color: black;
@@ -122,7 +97,6 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Dark Theme */
 html.dark {
   background-color: black;
   color: white;
@@ -135,11 +109,10 @@ body.dark {
 
 .navbar.dark,
 .sidebar.dark {
-  background-color: #333; /* Dark background for sidebar/navbar */
+  background-color: #333;
   color: white;
 }
 
-/* Add transitions for smooth theme change */
 .navbar,
 .sidebar {
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -155,21 +128,21 @@ body.dark-mode {
 }
 
 body.light-mode .sidebar {
-  background-color: #f0f0f0; /* light sidebar */
+  background-color: #f0f0f0;
   color: black;
 }
 
 body.dark-mode .sidebar {
-  background-color: #333; /* dark sidebar */
+  background-color: #333;
   color: white;
 }
 
 body.light-mode .navbar {
-  background-color: #f0f0f0; /* light navbar */
+  background-color: #f0f0f0;
   color: black;
 }
 
 body.dark-mode .navbar {
-  background-color: #333; /* dark navbar */
+  background-color: #333;
   color: white;
 }

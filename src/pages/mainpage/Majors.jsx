@@ -42,7 +42,7 @@ const fetchMajors = async () => {
     centers: major.centers || [],
     link: "/",
     fieldId: major.fieldId,
-    image: major.image
+    image: major.image,
   }));
   localStorage.setItem("majors", JSON.stringify(dataForSave));
 
@@ -81,26 +81,25 @@ const CategoriesMajors = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [editImageFile, setEditImageFile] = useState(null);
   const [editImagePreview, setEditImagePreview] = useState(null);
-  
+
   const [newMajor, setNewMajor] = useState({
     name: "",
     image: "linke",
     fieldId: "",
     subjectId: null,
   });
-  
+
   const [editingMajor, setEditingMajor] = useState({
     id: "",
     name: "",
     image: "linke",
     fieldId: "",
   });
-  
+
   const [newField, setNewField] = useState({
     name: "",
     image: "linke",
   });
-
 
   const {
     data: majors,
@@ -121,7 +120,6 @@ const CategoriesMajors = () => {
     queryKey: ["fields"],
     queryFn: fetchFields,
   });
-
 
   const uploadImageMutation = useMutation({
     mutationFn: async (file) => {
@@ -202,14 +200,17 @@ const CategoriesMajors = () => {
         fieldId: Number(majorData.fieldId),
       };
 
-      const response = await fetch(`https://findcourse.net.uz/api/major/${majorData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/major/${majorData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -233,12 +234,15 @@ const CategoriesMajors = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/major/${majorId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/major/${majorId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -306,14 +310,17 @@ const CategoriesMajors = () => {
         image: "linke",
       };
 
-      const response = await fetch(`https://findcourse.net.uz/api/fields/${fieldData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/fields/${fieldData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -337,12 +344,15 @@ const CategoriesMajors = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/fields/${fieldId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/fields/${fieldId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -453,7 +463,6 @@ const CategoriesMajors = () => {
     setOpenEditMajorDialog(true);
   };
 
-
   const renderCards = (data, isLoading, error, type) => {
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">Ошибка: {error.message}</p>;
@@ -489,9 +498,7 @@ const CategoriesMajors = () => {
             shadow={true}
             className="bg-[#4B0082] hover:bg-[#007BFF] text-white flex flex-col items-center justify-center p-6 min-w-[150px] h-40 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer relative"
             onClick={() =>
-              type === "major" 
-                ? handleOpenMajor(item) 
-                : handleOpenField(item)
+              type === "major" ? handleOpenMajor(item) : handleOpenField(item)
             }
           >
             <div className="absolute top-2 right-2 flex space-x-2">
@@ -501,7 +508,9 @@ const CategoriesMajors = () => {
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    type === "major" ? handleEditMajor(item) : handleEditField(item);
+                    type === "major"
+                      ? handleEditMajor(item)
+                      : handleEditField(item);
                   }}
                 >
                   <Icons.FaEdit size={16} />
@@ -540,10 +549,6 @@ const CategoriesMajors = () => {
 
   return (
     <div className="overflow-x-hidden bg-gray-900 dark:bg-gray-900">
-      {/* Categories Section - New Design */}
-
-
-      {/* Majors Section */}
       <div className="w-full px-6 py-6 bg-gray-100 dark:bg-gray-900">
         <div className="flex justify-between items-center mb-4">
           <Title>Majors</Title>
@@ -551,13 +556,11 @@ const CategoriesMajors = () => {
         {renderCards(majors, isLoadingMajors, errorMajors, "major")}
       </div>
 
-      {/* Fields Section */}
       <div className="w-full px-6 py-6 bg-gray-100 dark:bg-gray-900">
         <Title>Fields</Title>
         {renderCards(fields, isLoadingFields, errorFields, "field")}
       </div>
 
-      {/* Major Dialog */}
       <Dialog
         open={openMajorDialog}
         handler={() => setOpenMajorDialog(false)}
@@ -596,7 +599,6 @@ const CategoriesMajors = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Field Dialog */}
       <Dialog
         open={openFieldDialog}
         handler={() => setOpenFieldDialog(false)}
@@ -624,10 +626,6 @@ const CategoriesMajors = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Category Dialog */}
-
-
-      {/* Delete Major Confirmation Dialog */}
       <Dialog
         open={openDeleteMajorDialog}
         handler={() => setOpenDeleteMajorDialog(false)}
@@ -636,7 +634,8 @@ const CategoriesMajors = () => {
         <DialogHeader>Delete Major</DialogHeader>
         <DialogBody>
           <Typography variant="paragraph" className="text-red-500">
-            Are you sure you want to delete the major "{majorToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete the major "{majorToDelete?.name}"?
+            This action cannot be undone.
           </Typography>
         </DialogBody>
         <DialogFooter>
@@ -658,7 +657,6 @@ const CategoriesMajors = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Delete Field Confirmation Dialog */}
       <Dialog
         open={openDeleteFieldDialog}
         handler={() => setOpenDeleteFieldDialog(false)}
@@ -667,7 +665,8 @@ const CategoriesMajors = () => {
         <DialogHeader>Delete Field</DialogHeader>
         <DialogBody>
           <Typography variant="paragraph" className="text-red-500">
-            Are you sure you want to delete the field "{fieldToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete the field "{fieldToDelete?.name}"?
+            This action cannot be undone.
           </Typography>
         </DialogBody>
         <DialogFooter>
@@ -689,10 +688,6 @@ const CategoriesMajors = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Delete Category Confirmation Dialog */}
-
-
-      {/* Create Major Dialog */}
       <Dialog
         open={openCreateMajorDialog}
         handler={() => setOpenCreateMajorDialog(false)}
@@ -752,7 +747,6 @@ const CategoriesMajors = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Edit Major Dialog */}
       <Dialog
         open={openEditMajorDialog}
         handler={() => setOpenEditMajorDialog(false)}
@@ -811,8 +805,6 @@ const CategoriesMajors = () => {
           </Button>
         </DialogFooter>
       </Dialog>
-
-
     </div>
   );
 };

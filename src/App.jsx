@@ -15,31 +15,28 @@ import { ThemeProvider } from "@material-tailwind/react";
 const queryClient = new QueryClient();
 
 function App() {
-
   const theme = useThemeStore((state) => state.theme);
   const applyTheme = useThemeStore((state) => state.applyTheme);
 
-useEffect(() => {
-  applyTheme();
+  useEffect(() => {
+    applyTheme();
 
-  if (theme === "system") {
-    const listener = () => applyTheme();
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    media.addEventListener("change", listener);
-    return () => media.removeEventListener("change", listener);
-  }
-}, [theme]);
+    if (theme === "system") {
+      const listener = () => applyTheme();
+      const media = window.matchMedia("(prefers-color-scheme: dark)");
+      media.addEventListener("change", listener);
+      return () => media.removeEventListener("change", listener);
+    }
+  }, [theme]);
 
   const fetchUserData = useAuthStore((state) => state.fetchUserData);
   const accessToken = useAuthStore((state) => state.accessToken);
 
   useEffect(() => {
-    // Try to fetch user data if token exists
     if (accessToken) {
       fetchUserData();
     }
   }, [accessToken, fetchUserData]);
-
 
   return (
     <ThemeProvider>
@@ -65,7 +62,10 @@ useEffect(() => {
             />
             <Route
               path="CEO"
-              element={<ProtectedRoute requiredRole="ADMIN"><CEO /></ProtectedRoute>
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <CEO />
+                </ProtectedRoute>
               }
             />
             <Route path="Settings" element={<Settings />} />

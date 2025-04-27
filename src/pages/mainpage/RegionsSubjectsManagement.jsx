@@ -31,7 +31,6 @@ export const Title = ({ children }) => (
   </Typography>
 );
 
-// API functions
 const fetchRegions = async () => {
   const response = await fetch("https://findcourse.net.uz/api/regions/search");
   if (!response.ok) throw new Error("Failed to fetch regions");
@@ -70,7 +69,6 @@ const uploadImage = async (file) => {
 };
 
 const RegionsSubjectsManagement = () => {
-  // States for Regions
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [openRegionDialog, setOpenRegionDialog] = useState(false);
   const [openCreateRegionDialog, setOpenCreateRegionDialog] = useState(false);
@@ -80,7 +78,6 @@ const RegionsSubjectsManagement = () => {
   const [newRegion, setNewRegion] = useState({ name: "" });
   const [editingRegion, setEditingRegion] = useState({ id: "", name: "" });
 
-  // States for Subjects
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [openSubjectDialog, setOpenSubjectDialog] = useState(false);
   const [openCreateSubjectDialog, setOpenCreateSubjectDialog] = useState(false);
@@ -88,13 +85,16 @@ const RegionsSubjectsManagement = () => {
   const [openDeleteSubjectDialog, setOpenDeleteSubjectDialog] = useState(false);
   const [subjectToDelete, setSubjectToDelete] = useState(null);
   const [newSubject, setNewSubject] = useState({ name: "", image: "" });
-  const [editingSubject, setEditingSubject] = useState({ id: "", name: "", image: "" });
+  const [editingSubject, setEditingSubject] = useState({
+    id: "",
+    name: "",
+    image: "",
+  });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [editImageFile, setEditImageFile] = useState(null);
   const [editImagePreview, setEditImagePreview] = useState(null);
 
-  // Queries
   const {
     data: regions = [],
     isLoading: isLoadingRegions,
@@ -115,7 +115,6 @@ const RegionsSubjectsManagement = () => {
     queryFn: fetchSubjects,
   });
 
-  // Mutations for Regions
   const createRegionMutation = useMutation({
     mutationFn: async (regionData) => {
       const token = await useAuthStore.getState().refreshTokenFunc();
@@ -153,14 +152,17 @@ const RegionsSubjectsManagement = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/regions/${regionData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name: regionData.name }),
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/regions/${regionData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ name: regionData.name }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -184,12 +186,15 @@ const RegionsSubjectsManagement = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/regions/${regionId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/regions/${regionId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -208,7 +213,6 @@ const RegionsSubjectsManagement = () => {
     },
   });
 
-  // Mutations for Subjects
   const createSubjectMutation = useMutation({
     mutationFn: async (subjectData) => {
       const token = await useAuthStore.getState().refreshTokenFunc();
@@ -270,14 +274,17 @@ const RegionsSubjectsManagement = () => {
         image: imageUrl || subjectData.image,
       };
 
-      const response = await fetch(`https://findcourse.net.uz/api/subject/${subjectData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/subject/${subjectData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -303,12 +310,15 @@ const RegionsSubjectsManagement = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/subject/${subjectId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/subject/${subjectId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -327,7 +337,6 @@ const RegionsSubjectsManagement = () => {
     },
   });
 
-  // Handlers for Regions
   const handleOpenRegion = (region) => {
     setSelectedRegion(region);
     setOpenRegionDialog(true);
@@ -363,7 +372,6 @@ const RegionsSubjectsManagement = () => {
     setEditingRegion((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handlers for Subjects
   const handleOpenSubject = (subject) => {
     setSelectedSubject(subject);
     setOpenSubjectDialog(true);
@@ -387,7 +395,11 @@ const RegionsSubjectsManagement = () => {
       name: subject.name,
       image: subject.image,
     });
-    setEditImagePreview(subject.image ? `https://findcourse.net.uz/api/image/${subject.image}` : null);
+    setEditImagePreview(
+      subject.image
+        ? `https://findcourse.net.uz/api/image/${subject.image}`
+        : null
+    );
     setOpenEditSubjectDialog(true);
   };
 
@@ -425,10 +437,10 @@ const RegionsSubjectsManagement = () => {
     }
   };
 
-  // Render functions
   const renderRegionCards = () => {
     if (isLoadingRegions) return <Spinner className="h-8 w-8" />;
-    if (errorRegions) return <p className="text-red-500">Error: {errorRegions.message}</p>;
+    if (errorRegions)
+      return <p className="text-red-500">Error: {errorRegions.message}</p>;
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -478,8 +490,8 @@ const RegionsSubjectsManagement = () => {
                 </IconButton>
               </Tooltip>
             </div>
-            
-            <div 
+
+            <div
               className="flex flex-col items-center justify-center h-full"
               onClick={() => handleOpenRegion(region)}
             >
@@ -498,7 +510,8 @@ const RegionsSubjectsManagement = () => {
 
   const renderSubjectCards = () => {
     if (isLoadingSubjects) return <Spinner className="h-8 w-8" />;
-    if (errorSubjects) return <p className="text-red-500">Error: {errorSubjects.message}</p>;
+    if (errorSubjects)
+      return <p className="text-red-500">Error: {errorSubjects.message}</p>;
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -548,14 +561,14 @@ const RegionsSubjectsManagement = () => {
                 </IconButton>
               </Tooltip>
             </div>
-            
-            <div 
+
+            <div
               className="flex flex-col items-center justify-center h-full"
               onClick={() => handleOpenSubject(subject)}
             >
               {subject.image ? (
-                <img 
-                  src={`https://findcourse.net.uz/api/image/${subject.image}`} 
+                <img
+                  src={`https://findcourse.net.uz/api/image/${subject.image}`}
                   alt={subject.name}
                   className="w-16 h-16 object-cover rounded-full mb-3"
                 />
@@ -576,7 +589,6 @@ const RegionsSubjectsManagement = () => {
 
   return (
     <div className="overflow-x-hidden bg-gray-900 dark:bg-gray-900">
-      {/* Regions Section */}
       <div className="w-full px-6 py-6 bg-gray-100 dark:bg-gray-900">
         <div className="flex justify-between items-center mb-6">
           <Title>Regions</Title>
@@ -584,7 +596,6 @@ const RegionsSubjectsManagement = () => {
         {renderRegionCards()}
       </div>
 
-      {/* Subjects Section */}
       <div className="w-full px-6 py-6 bg-gray-100 dark:bg-gray-900">
         <div className="flex justify-between items-center mb-6">
           <Title>Subjects</Title>
@@ -592,7 +603,6 @@ const RegionsSubjectsManagement = () => {
         {renderSubjectCards()}
       </div>
 
-      {/* Region Dialogs */}
       <Dialog
         open={openRegionDialog}
         handler={() => setOpenRegionDialog(false)}
@@ -702,7 +712,8 @@ const RegionsSubjectsManagement = () => {
         <DialogHeader>Delete Region</DialogHeader>
         <DialogBody>
           <Typography variant="paragraph" className="text-red-500">
-            Are you sure you want to delete the region "{regionToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete the region "{regionToDelete?.name}"?
+            This action cannot be undone.
           </Typography>
         </DialogBody>
         <DialogFooter>
@@ -724,7 +735,6 @@ const RegionsSubjectsManagement = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Subject Dialogs */}
       <Dialog
         open={openSubjectDialog}
         handler={() => setOpenSubjectDialog(false)}
@@ -736,8 +746,8 @@ const RegionsSubjectsManagement = () => {
         <DialogBody className="bg-transparent p-4 rounded-b-lg">
           <div className="flex flex-col items-center">
             {selectedSubject?.image ? (
-              <img 
-                src={`https://findcourse.net.uz/api/image/${selectedSubject.image}`} 
+              <img
+                src={`https://findcourse.net.uz/api/image/${selectedSubject.image}`}
                 alt={selectedSubject.name}
                 className="w-32 h-32 object-cover rounded-lg mb-4"
               />
@@ -777,9 +787,11 @@ const RegionsSubjectsManagement = () => {
               onChange={handleSubjectInputChange}
               required
             />
-            
+
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Subject Image</label>
+              <label className="text-sm font-medium text-gray-700">
+                Subject Image
+              </label>
               <input
                 type="file"
                 accept="image/*"
@@ -793,9 +805,9 @@ const RegionsSubjectsManagement = () => {
               />
               {imagePreview && (
                 <div className="mt-2">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                 </div>
@@ -841,14 +853,16 @@ const RegionsSubjectsManagement = () => {
               onChange={handleEditSubjectInputChange}
               required
             />
-            
+
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Subject Image</label>
+              <label className="text-sm font-medium text-gray-700">
+                Subject Image
+              </label>
               {editImagePreview && (
                 <div className="mb-2">
-                  <img 
-                    src={editImagePreview} 
-                    alt="Current" 
+                  <img
+                    src={editImagePreview}
+                    alt="Current"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                   <Typography variant="small" className="text-gray-600 mt-1">
@@ -856,7 +870,7 @@ const RegionsSubjectsManagement = () => {
                   </Typography>
                 </div>
               )}
-              
+
               <input
                 type="file"
                 accept="image/*"
@@ -870,9 +884,9 @@ const RegionsSubjectsManagement = () => {
               />
               {editImageFile && (
                 <div className="mt-2">
-                  <img 
-                    src={URL.createObjectURL(editImageFile)} 
-                    alt="New Preview" 
+                  <img
+                    src={URL.createObjectURL(editImageFile)}
+                    alt="New Preview"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                   <Typography variant="small" className="text-gray-600 mt-1">
@@ -914,7 +928,8 @@ const RegionsSubjectsManagement = () => {
         <DialogHeader>Delete Subject</DialogHeader>
         <DialogBody>
           <Typography variant="paragraph" className="text-red-500">
-            Are you sure you want to delete the subject "{subjectToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete the subject "{subjectToDelete?.name}
+            "? This action cannot be undone.
           </Typography>
         </DialogBody>
         <DialogFooter>

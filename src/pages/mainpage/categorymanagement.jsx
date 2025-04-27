@@ -47,30 +47,29 @@ const getIconForField = (name) => {
 };
 
 const Categoriesmanagement = () => {
-
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
-  const [openCreateCategoryDialog, setOpenCreateCategoryDialog] = useState(false);
+  const [openCreateCategoryDialog, setOpenCreateCategoryDialog] =
+    useState(false);
   const [openEditCategoryDialog, setOpenEditCategoryDialog] = useState(false);
-  const [openDeleteCategoryDialog, setOpenDeleteCategoryDialog] = useState(false);
+  const [openDeleteCategoryDialog, setOpenDeleteCategoryDialog] =
+    useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [editImageFile, setEditImageFile] = useState(null);
   const [editImagePreview, setEditImagePreview] = useState(null);
 
-  
   const [newCategory, setNewCategory] = useState({
     name: "",
     image: "",
   });
-  
+
   const [editingCategory, setEditingCategory] = useState({
     id: "",
     name: "",
     image: "",
   });
-
 
   const {
     data: categories,
@@ -110,14 +109,13 @@ const Categoriesmanagement = () => {
     },
   });
 
-
   const createCategoryMutation = useMutation({
     mutationFn: async (categoryData) => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
       let imageUrl = "";
-      
+
       if (imageFile) {
         const uploadResponse = await uploadImageMutation.mutateAsync(imageFile);
         imageUrl = uploadResponse.data;
@@ -163,9 +161,11 @@ const Categoriesmanagement = () => {
       if (!token) throw new Error("Not authenticated");
 
       let imageUrl = categoryData.image;
-      
+
       if (editImageFile) {
-        const uploadResponse = await uploadImageMutation.mutateAsync(editImageFile);
+        const uploadResponse = await uploadImageMutation.mutateAsync(
+          editImageFile
+        );
         imageUrl = uploadResponse.data;
       }
 
@@ -174,14 +174,17 @@ const Categoriesmanagement = () => {
         image: imageUrl || categoryData.image,
       };
 
-      const response = await fetch(`https://findcourse.net.uz/api/categories/${categoryData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/categories/${categoryData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -207,12 +210,15 @@ const Categoriesmanagement = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/categories/${categoryId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/categories/${categoryId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -231,14 +237,14 @@ const Categoriesmanagement = () => {
     },
   });
 
-
   const handleOpenCategory = (category) => {
     setSelectedCategory(category);
     setOpenCategoryDialog(true);
   };
 
-
-  const handleCreateCategory = async () => {createCategoryMutation.mutate(newCategory);};
+  const handleCreateCategory = async () => {
+    createCategoryMutation.mutate(newCategory);
+  };
 
   const handleUpdateCategory = async () => {
     updateCategoryMutation.mutate(editingCategory);
@@ -247,7 +253,6 @@ const Categoriesmanagement = () => {
   const handleDeleteCategory = () => {
     deleteCategoryMutation.mutate(categoryToDelete.id);
   };
-
 
   const handleCategoryInputChange = (e) => {
     const { name, value } = e.target;
@@ -283,21 +288,24 @@ const Categoriesmanagement = () => {
     }
   };
 
-
-
   const handleEditCategory = (category) => {
     setEditingCategory({
       id: category.id,
       name: category.name,
       image: category.image,
     });
-    setEditImagePreview(category.image ? `https://findcourse.net.uz/api/image/${category.image}` : null);
+    setEditImagePreview(
+      category.image
+        ? `https://findcourse.net.uz/api/image/${category.image}`
+        : null
+    );
     setOpenEditCategoryDialog(true);
   };
 
   const renderCategoryCards = () => {
     if (isLoadingCategories) return <p>Loading...</p>;
-    if (errorCategories) return <p className="text-red-500">Ошибка: {errorCategories.message}</p>;
+    if (errorCategories)
+      return <p className="text-red-500">Ошибка: {errorCategories.message}</p>;
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -347,14 +355,14 @@ const Categoriesmanagement = () => {
                 </IconButton>
               </Tooltip>
             </div>
-            
-            <div 
+
+            <div
               className="flex flex-col items-center justify-center h-full"
               onClick={() => handleOpenCategory(category)}
             >
               {category.image ? (
-                <img 
-                  src={`https://findcourse.net.uz/api/image/${category.image}`} 
+                <img
+                  src={`https://findcourse.net.uz/api/image/${category.image}`}
                   alt={category.name}
                   className="w-16 h-16 object-cover rounded-full mb-3"
                 />
@@ -408,9 +416,7 @@ const Categoriesmanagement = () => {
             shadow={true}
             className="bg-[#4B0082] hover:bg-[#007BFF] text-white flex flex-col items-center justify-center p-6 min-w-[150px] h-40 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer relative"
             onClick={() =>
-              type === "major" 
-                ? handleOpenMajor(item) 
-                : handleOpenField(item)
+              type === "major" ? handleOpenMajor(item) : handleOpenField(item)
             }
           >
             <div className="absolute top-2 right-2 flex space-x-2">
@@ -420,7 +426,9 @@ const Categoriesmanagement = () => {
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    type === "major" ? handleEditMajor(item) : handleEditField(item);
+                    type === "major"
+                      ? handleEditMajor(item)
+                      : handleEditField(item);
                   }}
                 >
                   <Icons.FaEdit size={16} />
@@ -459,9 +467,6 @@ const Categoriesmanagement = () => {
 
   return (
     <div className="overflow-x-hidden bg-gray-900 dark:bg-gray-900">
-      {/* Categories Section - New Design */}
-
-
       <div className="w-full px-6 py-6 bg-gray-100 dark:bg-gray-900">
         <div className="flex justify-between items-center mb-6">
           <Title>Categories</Title>
@@ -469,7 +474,6 @@ const Categoriesmanagement = () => {
         {renderCategoryCards()}
       </div>
 
-      {/* Category Dialog */}
       <Dialog
         open={openCategoryDialog}
         handler={() => setOpenCategoryDialog(false)}
@@ -481,8 +485,8 @@ const Categoriesmanagement = () => {
         <DialogBody className="bg-transparent p-4 rounded-b-lg">
           <div className="flex flex-col items-center">
             {selectedCategory?.image ? (
-              <img 
-                src={`https://findcourse.net.uz/api/image/${selectedCategory.image}`} 
+              <img
+                src={`https://findcourse.net.uz/api/image/${selectedCategory.image}`}
                 alt={selectedCategory.name}
                 className="w-32 h-32 object-cover rounded-lg mb-4"
               />
@@ -507,8 +511,6 @@ const Categoriesmanagement = () => {
         </DialogFooter>
       </Dialog>
 
-
-      {/* Delete Category Confirmation Dialog */}
       <Dialog
         open={openDeleteCategoryDialog}
         handler={() => setOpenDeleteCategoryDialog(false)}
@@ -517,7 +519,8 @@ const Categoriesmanagement = () => {
         <DialogHeader>Delete Category</DialogHeader>
         <DialogBody>
           <Typography variant="paragraph" className="text-red-500">
-            Are you sure you want to delete the category "{categoryToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete the category "
+            {categoryToDelete?.name}"? This action cannot be undone.
           </Typography>
         </DialogBody>
         <DialogFooter>
@@ -539,8 +542,6 @@ const Categoriesmanagement = () => {
         </DialogFooter>
       </Dialog>
 
-
-      {/* Create Category Dialog */}
       <Dialog
         open={openCreateCategoryDialog}
         handler={() => setOpenCreateCategoryDialog(false)}
@@ -556,9 +557,11 @@ const Categoriesmanagement = () => {
               onChange={handleCategoryInputChange}
               required
             />
-            
+
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Category Image</label>
+              <label className="text-sm font-medium text-gray-700">
+                Category Image
+              </label>
               <input
                 type="file"
                 accept="image/*"
@@ -572,9 +575,9 @@ const Categoriesmanagement = () => {
               />
               {imagePreview && (
                 <div className="mt-2">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                 </div>
@@ -605,7 +608,6 @@ const Categoriesmanagement = () => {
         </DialogFooter>
       </Dialog>
 
-      {/* Edit Category Dialog */}
       <Dialog
         open={openEditCategoryDialog}
         handler={() => setOpenEditCategoryDialog(false)}
@@ -621,14 +623,16 @@ const Categoriesmanagement = () => {
               onChange={handleEditCategoryInputChange}
               required
             />
-            
+
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Category Image</label>
+              <label className="text-sm font-medium text-gray-700">
+                Category Image
+              </label>
               {editImagePreview && (
                 <div className="mb-2">
-                  <img 
-                    src={editImagePreview} 
-                    alt="Current" 
+                  <img
+                    src={editImagePreview}
+                    alt="Current"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                   <Typography variant="small" className="text-gray-600 mt-1">
@@ -636,7 +640,7 @@ const Categoriesmanagement = () => {
                   </Typography>
                 </div>
               )}
-              
+
               <input
                 type="file"
                 accept="image/*"
@@ -650,9 +654,9 @@ const Categoriesmanagement = () => {
               />
               {editImageFile && (
                 <div className="mt-2">
-                  <img 
-                    src={URL.createObjectURL(editImageFile)} 
-                    alt="New Preview" 
+                  <img
+                    src={URL.createObjectURL(editImageFile)}
+                    alt="New Preview"
                     className="w-32 h-32 object-cover rounded-lg"
                   />
                   <Typography variant="small" className="text-gray-600 mt-1">

@@ -93,14 +93,17 @@ const RegionsManagement = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/regions/${regionData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name: regionData.name }),
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/regions/${regionData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ name: regionData.name }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -124,12 +127,15 @@ const RegionsManagement = () => {
       const token = await useAuthStore.getState().refreshTokenFunc();
       if (!token) throw new Error("Not authenticated");
 
-      const response = await fetch(`https://findcourse.net.uz/api/regions/${regionId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://findcourse.net.uz/api/regions/${regionId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -185,7 +191,8 @@ const RegionsManagement = () => {
 
   const renderRegionCards = () => {
     if (isLoadingRegions) return <Spinner className="h-8 w-8" />;
-    if (errorRegions) return <p className="text-red-500">Error: {errorRegions.message}</p>;
+    if (errorRegions)
+      return <p className="text-red-500">Error: {errorRegions.message}</p>;
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -235,8 +242,8 @@ const RegionsManagement = () => {
                 </IconButton>
               </Tooltip>
             </div>
-            
-            <div 
+
+            <div
               className="flex flex-col items-center justify-center h-full"
               onClick={() => handleOpenRegion(region)}
             >
@@ -262,7 +269,6 @@ const RegionsManagement = () => {
         {renderRegionCards()}
       </div>
 
-      {/* Region Dialogs */}
       <Dialog
         open={openRegionDialog}
         handler={() => setOpenRegionDialog(false)}
@@ -372,7 +378,8 @@ const RegionsManagement = () => {
         <DialogHeader>Delete Region</DialogHeader>
         <DialogBody>
           <Typography variant="paragraph" className="text-red-500">
-            Are you sure you want to delete the region "{regionToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete the region "{regionToDelete?.name}"?
+            This action cannot be undone.
           </Typography>
         </DialogBody>
         <DialogFooter>

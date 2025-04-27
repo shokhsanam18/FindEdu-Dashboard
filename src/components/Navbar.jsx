@@ -26,12 +26,23 @@ import { useOpenStore, useSidebarStore } from "../Store";
 import { Search } from "lucide-react"
 
 const profileMenuItems = [
-  {
-    label: "My Profile",
-    icon: UserCircleIcon,
-    link: '/MyProfile'
-  },
- 
+  // {
+  //   label: "My Profile",
+  //   icon: UserCircleIcon,
+  //   link: '/MyProfile'
+  // },
+  // {
+    //   label: "Edit Profile",
+    //   icon: Cog6ToothIcon,
+    // },
+    // {
+      //   label: "Inbox",
+      //   icon: InboxArrowDownIcon,
+      // },
+      // {
+  //   label: "Help",
+  //   icon: LifebuoyIcon,
+  // },
   {
     label: "Sign Out",
     icon: PowerIcon,

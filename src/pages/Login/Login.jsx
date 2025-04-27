@@ -179,7 +179,7 @@ const Login = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder="Email" {...field} />
+                      <Input placeholder="Email" {...field} className="text-black"/>
                     </FormControl>{" "}
                     <FormMessage />
                   </FormItem>

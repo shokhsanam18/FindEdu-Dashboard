@@ -32,8 +32,6 @@ const CentersManagement = () => {
         console.error("Token yo'q!");
         return;
       }
-
-      // 🔥 Faqat kerakli fieldlarni ajratib olish
       const payload = {
         name: centerData.name,
         address: centerData.address,

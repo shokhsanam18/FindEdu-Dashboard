@@ -9,50 +9,32 @@ import {
   MenuList,
   MenuItem,
   Avatar,
-  // Card,
-  // IconButton,
+
 } from "@material-tailwind/react";
 import { useAuthStore } from "../Store";
 import {
-  // CubeTransparentIcon,
   UserCircleIcon,
-  // CodeBracketSquareIcon,
-  // Square3Stack3DIcon,
+
   ChevronDownIcon,
   Cog6ToothIcon,
-  // InboxArrowDownIcon,
-  // LifebuoyIcon,
+
   PowerIcon,
-  // RocketLaunchIcon,
-  // Bars2Icon,
+ 
 } from "@heroicons/react/24/solid";
 import Sidebar  from "./MiniSidebar";
 import { useOpenStore, useSidebarStore } from "../Store";
 import { Search } from "lucide-react"
 
-// profile menu component
 const profileMenuItems = [
   {
     label: "My Profile",
     icon: UserCircleIcon,
     link: '/MyProfile'
   },
-  // {
-    //   label: "Edit Profile",
-    //   icon: Cog6ToothIcon,
-    // },
-    // {
-      //   label: "Inbox",
-      //   icon: InboxArrowDownIcon,
-      // },
-      // {
-  //   label: "Help",
-  //   icon: LifebuoyIcon,
-  // },
+ 
   {
     label: "Sign Out",
     icon: PowerIcon,
-    // link: '/MyProfile'
   },
 ];
 

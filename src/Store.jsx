@@ -291,6 +291,102 @@ export const useUserStore = create((set, get) => ({
     }
   },
 }));
+export const useCardStore = create((set, get) => ({
+  majors: [],
+  regions: [],
+  allCenters: [],
+  filteredCenters: [],
+  selectedMajors: [],
+  selectedRegions: [],
+  loading: false,
+
+  fetchData: async () => {
+    set({ loading: true });
+    try {
+      const [majorsRes, regionsRes, centersRes] = await Promise.all([
+        axios.get(`${API_BASE}/major`),
+        axios.get(`${API_BASE}/regions/search`),
+        axios.get(`${API_BASE}/centers`),
+      ]);
+
+      const majors = majorsRes.data.data || [];
+      const regions = regionsRes.data.data || [];
+
+      const centers = centersRes.data.data?.map((center) => {
+        const comments = center.comments || [];
+        const avgRating =
+          comments.length > 0
+            ? comments.reduce((sum, c) => sum + c.star, 0) / comments.length
+            : 0;
+
+        return {
+          ...center,
+          imageUrl: center.image ? `${API_BASE}/image/${center.image}` : null,
+          rating: avgRating,
+        };
+      }) || [];
+
+      set({
+        majors,
+        regions,
+        allCenters: centers,
+        filteredCenters: centers,
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Error fetching card data:", error);
+      set({ loading: false });
+    }
+  },
+
+  setSelectedMajors: (selected) => {
+    if (!Array.isArray(selected)) selected = [];
+    set({ selectedMajors: selected }, get().filterCenters);
+  },
+
+  setSelectedRegions: (selected) => {
+    if (!Array.isArray(selected)) selected = [];
+    set({ selectedRegions: selected }, get().filterCenters);
+  },
+
+  removeMajor: (id) => {
+    const updated = get().selectedMajors.filter((m) => m !== id);
+    set({ selectedMajors: updated }, get().filterCenters);
+  },
+
+  removeRegion: (id) => {
+    const updated = get().selectedRegions.filter((r) => r !== id);
+    set({ selectedRegions: updated }, get().filterCenters);
+  },
+
+  filterCenters: () => {
+    const { allCenters, selectedMajors, selectedRegions } = get();
+    let filtered = allCenters;
+
+    if (selectedMajors.length > 0) {
+      filtered = filtered.filter((c) => selectedMajors.includes(c.majorId));
+    }
+
+    if (selectedRegions.length > 0) {
+      filtered = filtered.filter((c) => selectedRegions.includes(c.regionId));
+    }
+
+    const term = useSearchStore.getState().searchTerm.toLowerCase();
+    if (term.trim()) {
+      filtered = filtered.filter((center) => {
+        const nameMatch = center.name?.toLowerCase().includes(term);
+        const addressMatch = center.address?.toLowerCase().includes(term);
+        const majorMatch = center.majors?.some((m) =>
+          m.name?.toLowerCase().includes(term)
+        );
+        return nameMatch || addressMatch || majorMatch;
+      });
+    }
+
+    set({ filteredCenters: filtered });
+    console.log(filtered)
+  },
+}));
 
 export const useCenterStore = create((set, get) => ({
   centers: [],

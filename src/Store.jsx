@@ -413,10 +413,16 @@ export const useCenterStore = create((set, get) => ({
       localStorage.setItem("Centers", JSON.stringify(dataForSave));
     } catch (error) {
       console.error("Error fetching centers:", error);
-      if (error.response?.status === 401) {
-        await useAuthStore.getState().refreshTokenFunc();
-        return get().fetchCenters();
-      }
+if (error.response?.status === 401) {
+  const newToken = await useAuthStore.getState().refreshTokenFunc();
+  if (newToken) {
+    return axios.get(`${API_BASE}/centers`, {
+      headers: { Authorization: `Bearer ${newToken}` },
+    });
+  }
+  useAuthStore.getState().logout();
+  return [];
+}
       set({ error: "Failed to load centers." });
     } finally {
       set({ loading: false });

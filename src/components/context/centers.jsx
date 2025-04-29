@@ -301,7 +301,6 @@ const CentersManagement = () => {
   const [imageFile, setImageFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Branch management states
   const [branches, setBranches] = useState([]);
   const [mainBranch, setMainBranch] = useState(null);
   const [showBranchForm, setShowBranchForm] = useState(false);
@@ -351,13 +350,11 @@ const CentersManagement = () => {
       setIsSubmitting(true);
       const token = localStorage.getItem("accessToken");
       
-      // Fetch center details
       const centerRes = await axios.get(`${API_BASE}/centers/${center.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const centerData = centerRes.data?.data;
 
-      // Fetch branches
       const branchesRes = await axios.get(`${API_BASE}/filials`, {
         params: { centerId: center.id },
         headers: { Authorization: `Bearer ${token}` }
@@ -421,7 +418,6 @@ const CentersManagement = () => {
         return;
       }
 
-      // Upload image if changed
       if (imageFile) {
         const formData = new FormData();
         formData.append("image", imageFile);
@@ -436,7 +432,6 @@ const CentersManagement = () => {
         uploadedImageFilename = uploadRes.data?.data;
       }
 
-      // Prepare payload with only changed fields
       const payload = {};
       if (formData.name.trimEnd() !== selectedCenter.name.trim()) {
         payload.name = formData.name.trimEnd();
@@ -458,7 +453,6 @@ const CentersManagement = () => {
         });
         toast.success("Center updated successfully!");
 
-        // Update main branch if it exists
         if (mainBranch?.id) {
           const branchPayload = {};
           const expectedName = `${formData.name} - ${selectedCenter?.region?.name} Main branch`;
@@ -512,7 +506,6 @@ const CentersManagement = () => {
     }
   };
 
-  // Branch management functions
   const handleBranchImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -819,8 +812,6 @@ const CentersManagement = () => {
           )}
         </CardBody>
       </Card>
-
-      {/* Center Edit Modal */}
       <Dialog 
         open={isModalOpen} 
         handler={() => setIsModalOpen(false)}
@@ -1125,7 +1116,6 @@ const CentersManagement = () => {
         </DialogBody>
       </Dialog>
 
-      {/* Delete Branch Confirmation Dialog */}
       <Dialog open={openDeleteDialog} handler={() => setOpenDeleteDialog(false)}>
         <DialogHeader>Filialni o'chirish</DialogHeader>
         <DialogBody>
